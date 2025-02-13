@@ -147,6 +147,7 @@ namespace HRIS.Data.Contexts
         {
             var uid = _currentUserAccessor.GetCurrentUserId();
             var fullname = _currentUserAccessor.GetCurrentFullname();
+            var username = _currentUserAccessor.GetCurrentUsername();
             var entries = ChangeTracker
             .Entries()
                 .Where(e => e.Entity is BaseEntity && (
@@ -158,7 +159,7 @@ namespace HRIS.Data.Contexts
                 if (entry.State == EntityState.Added)
                 {
                     ((BaseEntity)entry.Entity).CreatedBy = !string.IsNullOrWhiteSpace(uid) ? Guid.Parse(uid) : null;
-                    ((BaseEntity)entry.Entity).CreatedByName = !string.IsNullOrWhiteSpace(fullname) ? fullname : "SYSTEM";
+                    ((BaseEntity)entry.Entity).CreatedByName = !string.IsNullOrWhiteSpace(fullname) ? fullname : !string.IsNullOrWhiteSpace(username) ? username : "SYSTEM";
                     ((BaseEntity)entry.Entity).CreatedDate = DateTime.UtcNow;
 
                     ((BaseEntity)entry.Entity).ModifiedBy = null;
@@ -168,7 +169,7 @@ namespace HRIS.Data.Contexts
                 else if (entry.State == EntityState.Modified)
                 {
                     ((BaseEntity)entry.Entity).ModifiedBy = !string.IsNullOrWhiteSpace(uid) ? Guid.Parse(uid) : null;
-                    ((BaseEntity)entry.Entity).ModifiedByName = !string.IsNullOrWhiteSpace(fullname) ? fullname : "SYSTEM";
+                    ((BaseEntity)entry.Entity).ModifiedByName = !string.IsNullOrWhiteSpace(fullname) ? fullname : !string.IsNullOrWhiteSpace(username) ? username : "SYSTEM";
                     ((BaseEntity)entry.Entity).ModifiedDate = DateTime.UtcNow;
                 }
 

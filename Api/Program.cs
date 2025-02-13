@@ -4,9 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using HRIS.Infrastructure.Utils;
 using HRIS.Infrastructure.Utils.Interfaces;
 using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.DataProtection.Repositories;
 using HRIS.Core.Interfaces.Repositories;
 using HRIS.Data.Repositories;
+using HRIS.Core.Interfaces.Services;
+using HRIS.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,6 +58,10 @@ builder.Services.AddSingleton<ICurrentUserAccessor, CurrentUserAccessor>();
 builder.Services.AddSingleton<ITokenGenerator, TokenGenerator>();
 
 builder.Services.AddScoped<IHrisRepository, HrisRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IRoleService, RoleService>();
 
 builder.Services.AddDbContext<HrisContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 

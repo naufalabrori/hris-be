@@ -8,13 +8,12 @@ namespace HRIS.Core.Entity
     {
         public User() { }
 
-        public User(UserDto userDto)
+        public User(NewUserDto user)
         {
-            EmployeeId = Guid.Parse(userDto.employeeId);
-            Username = userDto.username;
-            Password = userDto.password;
-            Email = userDto.email;
-            LastLogin = userDto.lastLogin;
+            EmployeeId = Guid.Parse(user.employeeId);
+            Username = user.username;
+            Password = user.password;
+            Email = user.email;
         }
 
         public Guid Id { get; set; } = default!;
