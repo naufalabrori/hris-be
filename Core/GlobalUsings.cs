@@ -1,4 +1,9 @@
 ﻿global using HRIS.Core.Dto;
 global using HRIS.Core.Entity;
+global using System;
 global using System.Threading;
 global using System.Threading.Tasks;
+global using System.Collections.Generic;
+global using HRIS.Core.Interfaces.Repositories;
+global using HRIS.Core.Interfaces.Services;
+global using HRIS.Infrastructure.Utils;

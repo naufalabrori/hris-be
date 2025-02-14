@@ -1,8 +1,4 @@
-﻿using HRIS.Core.Dto;
-using HRIS.Core.Entity;
-using System.Threading;
-using System.Threading.Tasks;
-
+﻿
 namespace HRIS.Core.Interfaces.Repositories
 {
     public interface IRoleRepository

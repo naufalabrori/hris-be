@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace HRIS.Core.Dto
 {
-    public record PermissionDto(string PermissionName);
+    public record PermissionDto(string permissionName);
+
+    public record PermissionQueryDto(string permissionName, string sortBy, bool? isDesc, int limit = 15, int offset = 0);
+
+    public record PermissionsResponseDto(List<Permission> Data, int TotalData);
 }

@@ -1,6 +1,4 @@
-﻿using HRIS.Core.Entity;
-using System.Collections.Generic;
-
+﻿
 namespace HRIS.Core.Dto
 {
     public record RoleDto(string roleName);
