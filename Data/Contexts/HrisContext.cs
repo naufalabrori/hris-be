@@ -1,16 +1,12 @@
 ﻿using HRIS.Infrastructure.Utils.Interfaces;
-using HRIS.Core.Entity;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace HRIS.Data.Contexts
 {
     public class HrisContext : DbContext
     {
         private readonly ICurrentUserAccessor _currentUserAccessor;
+        private IDbContextTransaction _transaction;
 
         public HrisContext(DbContextOptions<HrisContext> options, ICurrentUserAccessor currentUserAccessor) : base(options) 
         {
@@ -176,6 +172,21 @@ namespace HRIS.Data.Contexts
             }
 
             return await base.SaveChangesAsync(cancellationToken);
+        }
+
+        public void BeginTransaction()
+        {
+            _transaction = base.Database.BeginTransaction();
+        }
+
+        public void Commit()
+        {
+            _transaction.Commit();
+        }
+
+        public void Rollback()
+        {
+            _transaction.Rollback();
         }
     }
 }

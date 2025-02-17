@@ -74,6 +74,18 @@ builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IPayrollRepository, PayrollRepository>();
+builder.Services.AddScoped<IPayrollService, PayrollService>();
+builder.Services.AddScoped<ILeaveRepository, LeaveRepository>();
+builder.Services.AddScoped<ILeaveService, LeaveService>();
+builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
+builder.Services.AddScoped<IAttendanceService, AttendanceService>();
+builder.Services.AddScoped<ITrainingRepository, TrainingRepository>();
+builder.Services.AddScoped<ITrainingService, TrainingService>();
+builder.Services.AddScoped<IEmployeeTrainingRepository, EmployeeTrainingRepository>();
+builder.Services.AddScoped<IEmployeeTrainingService, EmployeeTrainingService>();
+builder.Services.AddScoped<IPerformanceReviewRepository, PerformanceReviewRepository>();
+builder.Services.AddScoped<IPerformanceReviewService, PerformanceReviewService>();
 
 builder.Services.AddDbContext<HrisContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
