@@ -18,7 +18,6 @@ namespace HRIS.Api.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         public async Task<IActionResult> CreateAsync([FromBody] NewUserDto user, CancellationToken cancellationToken)
         {
             var response = await _userService.CreateUserAsync(user, cancellationToken);

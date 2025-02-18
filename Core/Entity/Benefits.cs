@@ -12,7 +12,7 @@ namespace HRIS.Core.Entity
     {
         public Benefits() { }
 
-        public Benefits(BenefitsDto benefits)
+        public Benefits(BenefitDto benefits)
         {
             EmployeeId = Guid.Parse(benefits.employeeId);
             BenefitType = benefits.benefitType;
@@ -29,7 +29,7 @@ namespace HRIS.Core.Entity
         public DateTime EndDate { get; set; }
         public string? Details { get; set; } = default!;
 
-        public void UpdateBenefits(BenefitsDto benefits)
+        public void UpdateBenefits(BenefitDto benefits)
         {
             EmployeeId = Guid.TryParse(benefits?.employeeId, out var employeeId) ? employeeId : EmployeeId;
             BenefitType = benefits.benefitType ?? BenefitType;

@@ -8,6 +8,9 @@ using HRIS.Core.Interfaces.Repositories;
 using HRIS.Data.Repositories;
 using HRIS.Core.Interfaces.Services;
 using HRIS.Core.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using HRIS.Core.Dto;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -86,8 +89,65 @@ builder.Services.AddScoped<IEmployeeTrainingRepository, EmployeeTrainingReposito
 builder.Services.AddScoped<IEmployeeTrainingService, EmployeeTrainingService>();
 builder.Services.AddScoped<IPerformanceReviewRepository, PerformanceReviewRepository>();
 builder.Services.AddScoped<IPerformanceReviewService, PerformanceReviewService>();
+builder.Services.AddScoped<IBenefitRepository, BenefitRepository>();
+builder.Services.AddScoped<IBenefitService, BenefitService>();
+builder.Services.AddScoped<IRecruitmentRepository, RecruitmentRepository>();
+builder.Services.AddScoped<IRecruitmentService, RecruitmentService>();
+builder.Services.AddScoped<IApplicantRepository,ApplicantRepository>();
+builder.Services.AddScoped<IApplicantService,ApplicantService>();
 
 builder.Services.AddDbContext<HrisContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
+            builder.Configuration["AppSettings:Secret"]))
+    };
+
+    // Configure custom response for unauthorized access
+    options.Events = new JwtBearerEvents
+    {
+        OnChallenge = async context =>
+        {
+            context.HandleResponse(); // Prevent default response
+            context.Response.StatusCode = 401;
+            context.Response.ContentType = "application/json";
+
+            var response = new ApiResponseDto<object>
+            {
+                Success = false,
+                Message = "Unauthorized. Token is missing or invalid."
+            };
+
+            await context.Response.WriteAsJsonAsync(response);
+        },
+        OnForbidden = async context =>
+        {
+            Console.WriteLine("OnForbidden");
+            context.Response.StatusCode = 403;
+            context.Response.ContentType = "application/json";
+
+            var response = new ApiResponseDto<object>
+            {
+                Success = false,
+                Message = "Forbidden. You do not have access to this resource."
+            };
+
+            await context.Response.WriteAsJsonAsync(response);
+        },
+
+    };
+});
 
 var app = builder.Build();
 app.MapGet("/ping", () => "PONG!");

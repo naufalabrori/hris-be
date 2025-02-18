@@ -1,6 +1,4 @@
 ﻿
-using HRIS.Core.Dto;
-
 namespace HRIS.Data.Repositories
 {
     public class PermissionRepository : IPermissionRepository
@@ -37,6 +35,14 @@ namespace HRIS.Data.Repositories
             if (!string.IsNullOrWhiteSpace(permissionQueryDto.permissionName))
             {
                 query = query.Where(x => x.PermissionName.Contains(permissionQueryDto.permissionName));
+            }
+            if (!string.IsNullOrWhiteSpace(permissionQueryDto.action))
+            {
+                query = query.Where(x => x.Action.Contains(permissionQueryDto.action));
+            }
+            if (!string.IsNullOrWhiteSpace(permissionQueryDto.resource))
+            {
+                query = query.Where(x => x.Resource.Contains(permissionQueryDto.resource));
             }
             if (!string.IsNullOrWhiteSpace(permissionQueryDto?.sortBy) && permissionQueryDto.isDesc.HasValue)
             {

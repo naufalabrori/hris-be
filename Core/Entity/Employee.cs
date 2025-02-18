@@ -1,6 +1,4 @@
-﻿using HRIS.Core.Dto;
-using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace HRIS.Core.Entity
 {
@@ -20,7 +18,7 @@ namespace HRIS.Core.Entity
             HireDate = employee.hireDate;
             JobTitleId = Guid.Parse(employee.jobTitleId);
             DepartmentId = Guid.Parse(employee.departmentId);
-            ManagerId = Guid.Parse(employee.managerId);
+            ManagerId = Guid.TryParse(employee.managerId, out var managerIdGuid) ? managerIdGuid : Guid.Empty;
             EmploymentStatus = employee.employmentStatus;
             Salary = employee.salary;
         }

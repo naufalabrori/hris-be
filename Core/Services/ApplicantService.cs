@@ -1,36 +1,36 @@
 ﻿
 namespace HRIS.Core.Services
 {
-    public class JobTitleService : IJobTitleService
+    public class ApplicantService : IApplicantService
     {
-        private readonly IJobTitleRepository _jobTitleRepository;
         private readonly IHrisRepository _hrisRepository;
+        private readonly IApplicantRepository _applicantRepository;
 
-        public JobTitleService(IJobTitleRepository jobTitleRepository, IHrisRepository hrisRepository)
+        public ApplicantService(IHrisRepository hrisRepository, IApplicantRepository applicantRepository)
         {
-            _jobTitleRepository = jobTitleRepository;
             _hrisRepository = hrisRepository;
+            _applicantRepository = applicantRepository;
         }
 
-        public async Task<ApiResponseDto<JobTitle?>> CreateJobTitleAsync(JobTitleDto jobTitle, CancellationToken cancellationToken)
+        public async Task<ApiResponseDto<Applicant?>> CreateApplicantAsync(ApplicantDto applicant, CancellationToken cancellationToken)
         {
             try
             {
-                var newJobTitle = new JobTitle(jobTitle);
+                var newApplicant = new Applicant(applicant);
 
-                await _jobTitleRepository.AddAsync(newJobTitle, cancellationToken);
+                await _applicantRepository.AddAsync(newApplicant, cancellationToken);
                 await _hrisRepository.SaveChangesAsync(cancellationToken);
 
-                return new ApiResponseDto<JobTitle?>
+                return new ApiResponseDto<Applicant?>
                 {
                     Success = true,
-                    Message = "Create job title successfully",
-                    Data = newJobTitle
+                    Message = "Create applicant successfully",
+                    Data = newApplicant
                 };
             }
             catch (Exception ex)
             {
-                return new ApiResponseDto<JobTitle?>
+                return new ApiResponseDto<Applicant?>
                 {
                     Success = false,
                     Message = ex.Message,
@@ -38,22 +38,22 @@ namespace HRIS.Core.Services
             }
         }
 
-        public async Task<ApiResponseDto<JobTitlesResponseDto>> ReadJobTitlesAsync(JobTitleQueryDto jobTitleQueryDto, CancellationToken cancellationToken)
+        public async Task<ApiResponseDto<ApplicantsResponseDto>> ReadApplicantsAsync(ApplicantQueryDto applicantQueryDto, CancellationToken cancellationToken)
         {
             try
             {
-                var data = await _jobTitleRepository.GetAllAsync(jobTitleQueryDto, cancellationToken);
+                var data = await _applicantRepository.GetAllAsync(applicantQueryDto, cancellationToken);
 
-                return new ApiResponseDto<JobTitlesResponseDto>
+                return new ApiResponseDto<ApplicantsResponseDto>
                 {
                     Success = true,
-                    Message = "Get all job title successfully",
+                    Message = "Get all applicant successfully",
                     Data = data
                 };
             }
             catch (Exception ex)
             {
-                return new ApiResponseDto<JobTitlesResponseDto>
+                return new ApiResponseDto<ApplicantsResponseDto>
                 {
                     Success = false,
                     Message = ex.Message,
@@ -61,39 +61,39 @@ namespace HRIS.Core.Services
             }
         }
 
-        public async Task<ApiResponseDto<JobTitle?>> ReadJobTitleByIdAsync(string id, CancellationToken cancellationToken)
+        public async Task<ApiResponseDto<Applicant?>> ReadApplicantByIdAsync(string id, CancellationToken cancellationToken)
         {
             try
             {
                 if (!StringExtensions.IsValidGuid(id))
                 {
-                    return new ApiResponseDto<JobTitle?>
+                    return new ApiResponseDto<Applicant?>
                     {
                         Success = false,
                         Message = "Invalid Guid format"
                     };
                 }
 
-                var jobTitle = await _jobTitleRepository.GetByIdAsync(id, cancellationToken);
-                if (jobTitle == null)
+                var applicant = await _applicantRepository.GetByIdAsync(id, cancellationToken);
+                if (applicant == null)
                 {
-                    return new ApiResponseDto<JobTitle?>
+                    return new ApiResponseDto<Applicant?>
                     {
                         Success = false,
-                        Message = "Job title not found",
+                        Message = "Applicant not found"
                     };
                 }
 
-                return new ApiResponseDto<JobTitle?>
+                return new ApiResponseDto<Applicant?>
                 {
                     Success = true,
-                    Message = "Get job title successfully",
-                    Data = jobTitle
+                    Message = "Get applicant successfully",
+                    Data = applicant
                 };
             }
             catch (Exception ex)
             {
-                return new ApiResponseDto<JobTitle?>
+                return new ApiResponseDto<Applicant?>
                 {
                     Success = false,
                     Message = ex.Message,
@@ -101,44 +101,44 @@ namespace HRIS.Core.Services
             }
         }
 
-        public async Task<ApiResponseDto<JobTitle?>> UpdateJobTitleAsync(string id, JobTitleDto updateJobTitle, CancellationToken cancellationToken)
+        public async Task<ApiResponseDto<Applicant?>> UpdateApplicantAsync(string id, ApplicantDto updateApplicant, CancellationToken cancellationToken)
         {
             try
             {
                 if (!StringExtensions.IsValidGuid(id))
                 {
-                    return new ApiResponseDto<JobTitle?>
+                    return new ApiResponseDto<Applicant?>
                     {
                         Success = false,
                         Message = "Invalid Guid format"
                     };
                 }
 
-                var jobTitle = await _jobTitleRepository.GetByIdAsync(id, cancellationToken);
-                if (jobTitle == null)
+                var applicant = await _applicantRepository.GetByIdAsync(id, cancellationToken);
+                if (applicant == null)
                 {
-                    return new ApiResponseDto<JobTitle?>
+                    return new ApiResponseDto<Applicant?>
                     {
                         Success = false,
-                        Message = "Job title not found",
+                        Message = "Applicant not found"
                     };
                 }
 
-                jobTitle.UpdateJobTitle(updateJobTitle);
+                applicant.UpdateApplicant(updateApplicant);
 
-                await _jobTitleRepository.UpdateAsync(jobTitle, cancellationToken);
+                await _applicantRepository.UpdateAsync(applicant, cancellationToken);
                 await _hrisRepository.SaveChangesAsync(cancellationToken);
 
-                return new ApiResponseDto<JobTitle?>
+                return new ApiResponseDto<Applicant?>
                 {
                     Success = true,
-                    Message = "Update job title successfully",
-                    Data = jobTitle
+                    Message = "Update applicant successfully",
+                    Data = applicant
                 };
             }
             catch (Exception ex)
             {
-                return new ApiResponseDto<JobTitle?>
+                return new ApiResponseDto<Applicant?>
                 {
                     Success = false,
                     Message = ex.Message,
@@ -146,7 +146,7 @@ namespace HRIS.Core.Services
             }
         }
 
-        public async Task<ApiResponseDto<bool>> DeleteJobTitleAsync(string id, CancellationToken cancellationToken)
+        public async Task<ApiResponseDto<bool>> DeleteApplicantAsync(string id, CancellationToken cancellationToken)
         {
             try
             {
@@ -159,23 +159,23 @@ namespace HRIS.Core.Services
                     };
                 }
 
-                var jobTitle = await _jobTitleRepository.GetByIdAsync(id, cancellationToken);
-                if (jobTitle == null)
+                var applicant = await _applicantRepository.GetByIdAsync(id, cancellationToken);
+                if (applicant == null)
                 {
                     return new ApiResponseDto<bool>
                     {
                         Success = false,
-                        Message = "Job title not found",
+                        Message = "Applicant not found"
                     };
                 }
 
-                await _jobTitleRepository.DeleteAsync(jobTitle, cancellationToken);
+                await _applicantRepository.DeleteAsync(applicant, cancellationToken);
                 await _hrisRepository.SaveChangesAsync(cancellationToken);
 
                 return new ApiResponseDto<bool>
                 {
                     Success = true,
-                    Message = "Delete job title successfully",
+                    Message = "Delete applicant successfully",
                     Data = true
                 };
             }

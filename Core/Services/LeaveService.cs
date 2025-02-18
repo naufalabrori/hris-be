@@ -14,139 +14,194 @@ namespace HRIS.Core.Services
 
         public async Task<ApiResponseDto<Leave?>> CreateLeaveAsync(LeaveDto leave, CancellationToken cancellationToken)
         {
-            var existingLeave = await _leaveRepository.GetByEmployeeIdAsync(leave.employeeId, cancellationToken);
-            if (existingLeave.Count > 0)
+            try
             {
-                existingLeave = existingLeave.Where(x => x.LeaveType == leave.leaveType && x.StartDate.Date == leave.startDate.Date && x.EndDate.Date == leave.endDate.Date).ToList();
-
+                var existingLeave = await _leaveRepository.GetByEmployeeIdAsync(leave.employeeId, cancellationToken);
                 if (existingLeave.Count > 0)
                 {
-                    return new ApiResponseDto<Leave?>
+                    existingLeave = existingLeave.Where(x => x.LeaveType == leave.leaveType && x.StartDate.Date == leave.startDate.Date && x.EndDate.Date == leave.endDate.Date).ToList();
+
+                    if (existingLeave.Count > 0)
                     {
-                        Success = false,
-                        Message = $"Leave already exist for this leave type ({leave.leaveType}) in {leave.startDate.Date} into {leave.endDate.Date}"
-                    };
+                        return new ApiResponseDto<Leave?>
+                        {
+                            Success = false,
+                            Message = $"Leave already exist for this leave type ({leave.leaveType}) in {leave.startDate.Date} into {leave.endDate.Date}"
+                        };
+                    }
                 }
+
+                var newLeave = new Leave(leave);
+
+                await _leaveRepository.AddAsync(newLeave, cancellationToken);
+                await _hrisRepository.SaveChangesAsync(cancellationToken);
+
+                return new ApiResponseDto<Leave?>
+                {
+                    Success = true,
+                    Message = "Create leave successfully",
+                    Data = newLeave
+                };
             }
-
-            var newLeave = new Leave(leave);
-
-            await _leaveRepository.AddAsync(newLeave, cancellationToken);
-            await _hrisRepository.SaveChangesAsync(cancellationToken);
-
-            return new ApiResponseDto<Leave?>
+            catch (Exception ex)
             {
-                Success = true,
-                Message = "Create leave successfully",
-                Data = newLeave
-            };
+                return new ApiResponseDto<Leave?>
+                {
+                    Success = false,
+                    Message = ex.Message,
+                };
+            }
         }
 
         public async Task<ApiResponseDto<LeavesResponseDto>> ReadLeavesAsync(LeaveQueryDto leaveQueryDto, CancellationToken cancellationToken)
         {
-            var data = await _leaveRepository.GetAllAsync(leaveQueryDto, cancellationToken);
-
-            return new ApiResponseDto<LeavesResponseDto>
+            try
             {
-                Success = true,
-                Message = "Get all leave successfully",
-                Data = data
-            };
+                var data = await _leaveRepository.GetAllAsync(leaveQueryDto, cancellationToken);
+
+                return new ApiResponseDto<LeavesResponseDto>
+                {
+                    Success = true,
+                    Message = "Get all leave successfully",
+                    Data = data
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponseDto<LeavesResponseDto>
+                {
+                    Success = false,
+                    Message = ex.Message,
+                };
+            }
         }
 
         public async Task<ApiResponseDto<Leave?>> ReadLeaveByIdAsync(string id, CancellationToken cancellationToken)
         {
-            if (!StringExtensions.IsValidGuid(id))
+            try
+            {
+                if (!StringExtensions.IsValidGuid(id))
+                {
+                    return new ApiResponseDto<Leave?>
+                    {
+                        Success = false,
+                        Message = "Invalid Guid format"
+                    };
+                }
+
+                var leave = await _leaveRepository.GetByIdAsync(id, cancellationToken);
+                if (leave == null)
+                {
+                    return new ApiResponseDto<Leave?>
+                    {
+                        Success = false,
+                        Message = "Leave not found"
+                    };
+                }
+
+                return new ApiResponseDto<Leave?>
+                {
+                    Success = true,
+                    Message = "Get leave successfully",
+                    Data = leave
+                };
+            }
+            catch (Exception e)
             {
                 return new ApiResponseDto<Leave?>
                 {
                     Success = false,
-                    Message = "Invalid Guid format"
+                    Message = e.Message,
                 };
             }
-
-            var leave = await _leaveRepository.GetByIdAsync(id, cancellationToken);
-            if (leave == null)
-            {
-                return new ApiResponseDto<Leave?>
-                {
-                    Success = false,
-                    Message = "Leave not found"
-                };
-            }
-
-            return new ApiResponseDto<Leave?>
-            {
-                Success = true,
-                Message = "Get leave successfully",
-                Data = leave
-            };
         }
 
         public async Task<ApiResponseDto<Leave?>> UpdateLeaveAsync(string id, LeaveDto updateLeave, CancellationToken cancellationToken)
         {
-            if (!StringExtensions.IsValidGuid(id))
+            try
+            {
+                if (!StringExtensions.IsValidGuid(id))
+                {
+                    return new ApiResponseDto<Leave?>
+                    {
+                        Success = false,
+                        Message = "Invalid Guid format"
+                    };
+                }
+
+                var leave = await _leaveRepository.GetByIdAsync(id, cancellationToken);
+                if (leave == null)
+                {
+                    return new ApiResponseDto<Leave?>
+                    {
+                        Success = false,
+                        Message = "Leave not found"
+                    };
+                }
+
+                leave.UpdateLeave(updateLeave);
+
+                await _leaveRepository.UpdateAsync(leave, cancellationToken);
+                await _hrisRepository.SaveChangesAsync(cancellationToken);
+
+                return new ApiResponseDto<Leave?>
+                {
+                    Success = true,
+                    Message = "Update leave successfully",
+                    Data = leave
+                };
+            }
+            catch (Exception ex)
             {
                 return new ApiResponseDto<Leave?>
                 {
                     Success = false,
-                    Message = "Invalid Guid format"
+                    Message = ex.Message,
                 };
             }
-
-            var leave = await _leaveRepository.GetByIdAsync(id, cancellationToken);
-            if (leave == null)
-            {
-                return new ApiResponseDto<Leave?>
-                {
-                    Success = false,
-                    Message = "Leave not found"
-                };
-            }
-
-            leave.UpdateLeave(updateLeave);
-
-            await _leaveRepository.UpdateAsync(leave, cancellationToken);
-            await _hrisRepository.SaveChangesAsync(cancellationToken);
-
-            return new ApiResponseDto<Leave?>
-            {
-                Success = true,
-                Message = "Update leave successfully",
-                Data = leave
-            };
         }
 
         public async Task<ApiResponseDto<bool>> DeleteLeaveAsync(string id, CancellationToken cancellationToken)
         {
-            if (!StringExtensions.IsValidGuid(id))
+            try
+            {
+                if (!StringExtensions.IsValidGuid(id))
+                {
+                    return new ApiResponseDto<bool>
+                    {
+                        Success = false,
+                        Message = "Invalid Guid format"
+                    };
+                }
+
+                var leave = await _leaveRepository.GetByIdAsync(id, cancellationToken);
+                if (leave == null)
+                {
+                    return new ApiResponseDto<bool>
+                    {
+                        Success = false,
+                        Message = "Leave not found"
+                    };
+                }
+
+                await _leaveRepository.DeleteAsync(leave, cancellationToken);
+                await _hrisRepository.SaveChangesAsync(cancellationToken);
+
+                return new ApiResponseDto<bool>
+                {
+                    Success = true,
+                    Message = "Delete leave successfully",
+                    Data = true,
+                };
+            }
+            catch (Exception ex)
             {
                 return new ApiResponseDto<bool>
                 {
                     Success = false,
-                    Message = "Invalid Guid format"
+                    Message = ex.Message,
                 };
             }
-
-            var leave = await _leaveRepository.GetByIdAsync(id, cancellationToken);
-            if (leave == null)
-            {
-                return new ApiResponseDto<bool>
-                {
-                    Success = false,
-                    Message = "Leave not found"
-                };
-            }
-
-            await _leaveRepository.DeleteAsync(leave, cancellationToken);
-            await _hrisRepository.SaveChangesAsync(cancellationToken);
-
-            return new ApiResponseDto<bool>
-            {
-                Success = true,
-                Message = "Delete leave successfully",
-                Data = true,
-            };
         }
     }
 }

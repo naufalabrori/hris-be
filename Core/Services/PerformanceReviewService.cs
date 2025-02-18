@@ -14,17 +14,28 @@ namespace HRIS.Core.Services
 
         public async Task<ApiResponseDto<PerformanceReview?>> CreatePerformanceReviewAsync(PerformanceReviewDto performanceReview, CancellationToken cancellationToken)
         {
-            var newPerformanceReview = new PerformanceReview(performanceReview);
-
-            await _performanceReviewRepository.AddAsync(newPerformanceReview, cancellationToken);
-            await _hrisRepository.SaveChangesAsync(cancellationToken);
-
-            return new ApiResponseDto<PerformanceReview?>
+            try
             {
-                Success = true,
-                Message = "Create performance review successfully",
-                Data = newPerformanceReview
-            };
+                var newPerformanceReview = new PerformanceReview(performanceReview);
+
+                await _performanceReviewRepository.AddAsync(newPerformanceReview, cancellationToken);
+                await _hrisRepository.SaveChangesAsync(cancellationToken);
+
+                return new ApiResponseDto<PerformanceReview?>
+                {
+                    Success = true,
+                    Message = "Create performance review successfully",
+                    Data = newPerformanceReview
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponseDto<PerformanceReview?>
+                {
+                    Success = true,
+                    Message = ex.Message,
+                };
+            }
         }
 
         public async Task<ApiResponseDto<PerformanceReviewsResponseDto>> ReadPerformanceReviewsAsync(PerformanceReviewQueryDto performanceReviewQueryDto, CancellationToken cancellationToken)

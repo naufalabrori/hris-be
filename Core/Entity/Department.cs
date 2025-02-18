@@ -1,6 +1,4 @@
-﻿using HRIS.Core.Dto;
-using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace HRIS.Core.Entity
 {
@@ -11,14 +9,14 @@ namespace HRIS.Core.Entity
         public Department(DepartmentDto departmentDto)
         {
             DepartmentName = departmentDto.departmentName;
-            ManagerId = Guid.Parse(departmentDto.managerId);
+            ManagerId = Guid.TryParse(departmentDto.managerId, out var managerIdGuid) ? managerIdGuid : Guid.Empty;
             Location = departmentDto.location;
         }
 
         public Guid Id { get; set; } = default!;
         [StringLength(100)]
         public string DepartmentName { get; set; } = default!;
-        public Guid ManagerId { get; set; } = default!;
+        public Guid ManagerId { get; set; } = Guid.Empty;
         [StringLength(255)]
         public string Location { get; set; } = default!;
 
