@@ -8,3 +8,5 @@ global using System.Linq;
 global using HRIS.Core.Interfaces.Repositories;
 global using HRIS.Core.Interfaces.Services;
 global using HRIS.Infrastructure.Utils;
+global using HRIS.Infrastructure.Utils.Interfaces;
+global using Mapster;

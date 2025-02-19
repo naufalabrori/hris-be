@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using HRIS.Infrastructure.Utils;
 using HRIS.Infrastructure.Utils.Interfaces;
+using HRIS.Infrastructure.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using HRIS.Core.Interfaces.Repositories;
 using HRIS.Data.Repositories;
@@ -11,8 +12,24 @@ using HRIS.Core.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using HRIS.Core.Dto;
+using Serilog;
+using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
+
+ConfigurationManager configuration = builder.Configuration;
+
+// Konfigurasi Serilog
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information() // Log hanya level Information ke atas
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning) // Abaikan log info dari Microsoft
+    //.MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning) // Abaikan detail dari ASP.NET Core
+    .MinimumLevel.Override("Microsoft.EntityFrameworkCore.Database.Command", LogEventLevel.Warning) // Menyembunyikan log query database
+    .WriteTo.Console()
+    .WriteTo.File("Logs/hris-log-.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7)
+    .CreateLogger();
+
+builder.Host.UseSerilog(); // Menggunakan Serilog sebagai logging provider
 
 builder.Services.AddControllers().AddNewtonsoftJson();
 builder.Services.AddHttpContextAccessor();
@@ -93,8 +110,8 @@ builder.Services.AddScoped<IBenefitRepository, BenefitRepository>();
 builder.Services.AddScoped<IBenefitService, BenefitService>();
 builder.Services.AddScoped<IRecruitmentRepository, RecruitmentRepository>();
 builder.Services.AddScoped<IRecruitmentService, RecruitmentService>();
-builder.Services.AddScoped<IApplicantRepository,ApplicantRepository>();
-builder.Services.AddScoped<IApplicantService,ApplicantService>();
+builder.Services.AddScoped<IApplicantRepository, ApplicantRepository>();
+builder.Services.AddScoped<IApplicantService, ApplicantService>();
 
 builder.Services.AddDbContext<HrisContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -152,12 +169,17 @@ builder.Services.AddAuthentication(options =>
 var app = builder.Build();
 app.MapGet("/ping", () => "PONG!");
 
+// Configure the HTTP request pipeline.
+Log.Information("Start configuring http request pipeline");
+
 // Ensure the tables are created
 using (var scope = app.Services.CreateScope())
 {
     using var context = scope.ServiceProvider.GetService<HrisContext>();
     context?.Database.Migrate();
 }
+
+app.UseMiddleware<ExceptionHandlingMiddleware>(); // Tambahkan middleware logging
 
 app.UseAuthentication();
 app.UseRouting();

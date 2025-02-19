@@ -1,14 +1,4 @@
-﻿using HRIS.Core.Dto;
-using HRIS.Core.Entity;
-using HRIS.Core.Interfaces.Repositories;
-using HRIS.Core.Interfaces.Services;
-using HRIS.Infrastructure.Utils;
-using HRIS.Infrastructure.Utils.Interfaces;
-using Mapster;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-
+﻿
 namespace HRIS.Core.Services
 {
     public class UserService : IUserService
@@ -263,61 +253,50 @@ namespace HRIS.Core.Services
 
         public async Task<ApiResponseDto<UserLoginResponseDto?>> LoginUserAsync(UserLoginDto userLogin, CancellationToken cancellationToken)
         {
-            try
-            {
-                var user = await _userRepository.GetByEmailAsync(userLogin.email, cancellationToken);
-                if (user == null)
-                {
-                    return new ApiResponseDto<UserLoginResponseDto?>
-                    {
-                        Success = false,
-                        Message = "User not found",
-                    };
-                }
-
-                var isCorrectPassword = PasswordHasher.VerifyPassword(userLogin.password, user.Password);
-                if (!isCorrectPassword)
-                {
-                    return new ApiResponseDto<UserLoginResponseDto?>
-                    {
-                        Success = false,
-                        Message = "Incorrect password"
-                    };
-                }
-
-                var employee = await _employeeRepository.GetByIdAsync(user.EmployeeId.ToString(), cancellationToken);
-                if (employee == null)
-                {
-                    return new ApiResponseDto<UserLoginResponseDto?>
-                    {
-                        Success = false,
-                        Message = "Employee not found"
-                    };
-                }
-
-                string fullname = employee.FirstName + " " +  employee.LastName ?? string.Empty;
-
-                user.LastLogin = DateTime.UtcNow;
-                await _userRepository.UpdateAsync(user, cancellationToken);
-                await _hrisRepository.SaveChangesAsync(cancellationToken);
-
-                var token = _tokenGenerator.GenerateToken(user.Id.ToString(), user.Username, fullname);
-
-                return new ApiResponseDto<UserLoginResponseDto?>
-                {
-                    Success = true,
-                    Message = "User login successfully",
-                    Data = new UserLoginResponseDto(token, user.Adapt<UserResponseDto>())
-                };
-            }
-            catch (Exception ex)
+            var user = await _userRepository.GetByEmailAsync(userLogin.email, cancellationToken);
+            if (user == null)
             {
                 return new ApiResponseDto<UserLoginResponseDto?>
                 {
                     Success = false,
-                    Message = ex.Message,
+                    Message = "User not found",
                 };
             }
+
+            var isCorrectPassword = PasswordHasher.VerifyPassword(userLogin.password, user.Password);
+            if (!isCorrectPassword)
+            {
+                return new ApiResponseDto<UserLoginResponseDto?>
+                {
+                    Success = false,
+                    Message = "Incorrect password"
+                };
+            }
+
+            var employee = await _employeeRepository.GetByIdAsync(user.EmployeeId.ToString(), cancellationToken);
+            if (employee == null)
+            {
+                return new ApiResponseDto<UserLoginResponseDto?>
+                {
+                    Success = false,
+                    Message = "Employee not found"
+                };
+            }
+
+            string fullname = employee.FirstName + " " + employee.LastName ?? string.Empty;
+
+            user.LastLogin = DateTime.UtcNow;
+            await _userRepository.UpdateAsync(user, cancellationToken);
+            await _hrisRepository.SaveChangesAsync(cancellationToken);
+
+            var token = _tokenGenerator.GenerateToken(user.Id.ToString(), user.Username, fullname);
+
+            return new ApiResponseDto<UserLoginResponseDto?>
+            {
+                Success = true,
+                Message = "User login successfully",
+                Data = new UserLoginResponseDto(token, user.Adapt<UserResponseDto>())
+            };
         }
     }
 }
