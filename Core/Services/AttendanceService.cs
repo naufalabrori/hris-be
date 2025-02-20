@@ -14,179 +14,124 @@ namespace HRIS.Core.Services
 
         public async Task<ApiResponseDto<Attendance?>> CreateAttendanceAsync(AttendanceDto attendance, CancellationToken cancellationToken)
         {
-            try
-            {
-                var newAttendance = new Attendance(attendance);
+            var newAttendance = new Attendance(attendance);
 
-                await _attendanceRepository.AddAsync(newAttendance, cancellationToken);
-                await _hrisRepository.SaveChangesAsync(cancellationToken);
+            await _attendanceRepository.AddAsync(newAttendance, cancellationToken);
+            await _hrisRepository.SaveChangesAsync(cancellationToken);
 
-                return new ApiResponseDto<Attendance?>
-                {
-                    Success = true,
-                    Message = "Create attendance successfully",
-                    Data = newAttendance
-                };
-            }
-            catch (Exception ex)
+            return new ApiResponseDto<Attendance?>
             {
-                return new ApiResponseDto<Attendance?>
-                {
-                    Success = false,
-                    Message = ex.Message,
-                };
-            }
+                Success = true,
+                Message = "Create attendance successfully",
+                Data = newAttendance
+            };
         }
 
         public async Task<ApiResponseDto<AttendancesResponseDto>> ReadAttendancesAsync(AttendanceQueryDto attendanceQueryDto, CancellationToken cancellationToken)
         {
-            try
-            {
-                var data = await _attendanceRepository.GetAllAsync(attendanceQueryDto, cancellationToken);
+            var data = await _attendanceRepository.GetAllAsync(attendanceQueryDto, cancellationToken);
 
-                return new ApiResponseDto<AttendancesResponseDto>
-                {
-                    Success = true,
-                    Message = "Get all atteandance successfully",
-                    Data = data
-                };
-            }
-            catch (Exception ex)
+            return new ApiResponseDto<AttendancesResponseDto>
             {
-                return new ApiResponseDto<AttendancesResponseDto>
-                {
-                    Success = false,
-                    Message = ex.Message,
-                };
-            }
+                Success = true,
+                Message = "Get all atteandance successfully",
+                Data = data
+            };
         }
 
         public async Task<ApiResponseDto<Attendance?>> ReadAttendanceByIdAsync(string id, CancellationToken cancellationToken)
         {
-            try
-            {
-                if (!StringExtensions.IsValidGuid(id))
-                {
-                    return new ApiResponseDto<Attendance?>
-                    {
-                        Success = false,
-                        Message = "Invalid Guid format"
-                    };
-                }
-
-                var atteandance = await _attendanceRepository.GetByIdAsync(id, cancellationToken);
-                if (atteandance == null)
-                {
-                    return new ApiResponseDto<Attendance?>
-                    {
-                        Success = false,
-                        Message = "Attendance not found"
-                    };
-                }
-
-                return new ApiResponseDto<Attendance?>
-                {
-                    Success = true,
-                    Message = "Get attendance successfully",
-                    Data = atteandance
-                };
-            }
-            catch (Exception ex)
+            if (!StringExtensions.IsValidGuid(id))
             {
                 return new ApiResponseDto<Attendance?>
                 {
                     Success = false,
-                    Message = ex.Message,
+                    Message = "Invalid Guid format"
                 };
             }
+
+            var atteandance = await _attendanceRepository.GetByIdAsync(id, cancellationToken);
+            if (atteandance == null)
+            {
+                return new ApiResponseDto<Attendance?>
+                {
+                    Success = false,
+                    Message = "Attendance not found"
+                };
+            }
+
+            return new ApiResponseDto<Attendance?>
+            {
+                Success = true,
+                Message = "Get attendance successfully",
+                Data = atteandance
+            };
         }
 
         public async Task<ApiResponseDto<Attendance?>> UpdateAttendanceAsync(string id, AttendanceDto updateAttendance, CancellationToken cancellationToken)
         {
-            try
-            {
-                if (!StringExtensions.IsValidGuid(id))
-                {
-                    return new ApiResponseDto<Attendance?>
-                    {
-                        Success = false,
-                        Message = "Invalid Guid format"
-                    };
-                }
-
-                var atteandance = await _attendanceRepository.GetByIdAsync(id, cancellationToken);
-                if (atteandance == null)
-                {
-                    return new ApiResponseDto<Attendance?>
-                    {
-                        Success = false,
-                        Message = "Attendance not found"
-                    };
-                }
-
-                atteandance.UpdateAttendance(updateAttendance);
-
-                await _attendanceRepository.UpdateAsync(atteandance, cancellationToken);
-                await _hrisRepository.SaveChangesAsync(cancellationToken);
-
-                return new ApiResponseDto<Attendance?>
-                {
-                    Success = true,
-                    Message = "Update attendance successfully",
-                    Data = atteandance
-                };
-            }
-            catch (Exception ex)
+            if (!StringExtensions.IsValidGuid(id))
             {
                 return new ApiResponseDto<Attendance?>
                 {
                     Success = false,
-                    Message = ex.Message,
+                    Message = "Invalid Guid format"
                 };
             }
+
+            var atteandance = await _attendanceRepository.GetByIdAsync(id, cancellationToken);
+            if (atteandance == null)
+            {
+                return new ApiResponseDto<Attendance?>
+                {
+                    Success = false,
+                    Message = "Attendance not found"
+                };
+            }
+
+            atteandance.UpdateAttendance(updateAttendance);
+
+            await _attendanceRepository.UpdateAsync(atteandance, cancellationToken);
+            await _hrisRepository.SaveChangesAsync(cancellationToken);
+
+            return new ApiResponseDto<Attendance?>
+            {
+                Success = true,
+                Message = "Update attendance successfully",
+                Data = atteandance
+            };
         }
 
         public async Task<ApiResponseDto<bool>> DeleteAttendanceAsync(string id, CancellationToken cancellationToken)
         {
-            try
-            {
-                if (!StringExtensions.IsValidGuid(id))
-                {
-                    return new ApiResponseDto<bool>
-                    {
-                        Success = false,
-                        Message = "Invalid Guid format"
-                    };
-                }
-
-                var atteandance = await _attendanceRepository.GetByIdAsync(id, cancellationToken);
-                if (atteandance == null)
-                {
-                    return new ApiResponseDto<bool>
-                    {
-                        Success = false,
-                        Message = "Attendance not found"
-                    };
-                }
-
-                await _attendanceRepository.DeleteAsync(atteandance, cancellationToken);
-                await _hrisRepository.SaveChangesAsync(cancellationToken);
-
-                return new ApiResponseDto<bool>
-                {
-                    Success = true,
-                    Message = "Delete atteandane successfully",
-                    Data = true
-                };
-            }
-            catch (Exception ex)
+            if (!StringExtensions.IsValidGuid(id))
             {
                 return new ApiResponseDto<bool>
                 {
                     Success = false,
-                    Message = ex.Message,
+                    Message = "Invalid Guid format"
                 };
             }
+
+            var atteandance = await _attendanceRepository.GetByIdAsync(id, cancellationToken);
+            if (atteandance == null)
+            {
+                return new ApiResponseDto<bool>
+                {
+                    Success = false,
+                    Message = "Attendance not found"
+                };
+            }
+
+            await _attendanceRepository.DeleteAsync(atteandance, cancellationToken);
+            await _hrisRepository.SaveChangesAsync(cancellationToken);
+
+            return new ApiResponseDto<bool>
+            {
+                Success = true,
+                Message = "Delete atteandane successfully",
+                Data = true
+            };
         }
     }
 }
