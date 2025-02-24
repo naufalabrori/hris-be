@@ -5,11 +5,13 @@ namespace HRIS.Core.Services
     {
         private readonly IPermissionRepository _permissionRepository;
         private readonly IHrisRepository _hrisRepository;
+        private readonly ICurrentUserAccessor _currentUserAccessor;
 
-        public PermissionService(IPermissionRepository permissionRepository, IHrisRepository hrisRepository)
+        public PermissionService(IPermissionRepository permissionRepository, IHrisRepository hrisRepository, ICurrentUserAccessor currentUserAccessor)
         {
             _permissionRepository = permissionRepository;
             _hrisRepository = hrisRepository;
+            _currentUserAccessor = currentUserAccessor;
         }
 
         public async Task<ApiResponseDto<Permission?>> CreatePermissionAsync(PermissionDto permission, CancellationToken cancellationToken)
@@ -140,6 +142,32 @@ namespace HRIS.Core.Services
                 Success = true,
                 Message = "Delete permission successfully",
                 Data = true
+            };
+        }
+
+        public async Task<ApiResponseDto<PermissionUserDto>> GetPermissionUserAsync(CancellationToken cancellationToken)
+        {
+            var userId = _currentUserAccessor.GetCurrentUserId();
+            if (userId == null)
+            {
+                throw new ArgumentNullException(nameof(userId));
+            }
+
+            var permissions = await _permissionRepository.GetPermissionByUserIdAsync(userId, cancellationToken);
+
+            var userPermission = new List<string>();
+
+            foreach (var permission in permissions)
+            {
+                var permit = $"{permission.Action}.{permission.Resource}";
+                userPermission.Add(permit);
+            }
+
+            return new ApiResponseDto<PermissionUserDto>
+            {
+                Success = true,
+                Message = "Get User Permission successfully",
+                Data = new PermissionUserDto(userPermission)
             };
         }
     }

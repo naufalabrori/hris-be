@@ -34,15 +34,15 @@ namespace HRIS.Data.Repositories
 
             if (!string.IsNullOrWhiteSpace(permissionQueryDto.permissionName))
             {
-                query = query.Where(x => x.PermissionName.Contains(permissionQueryDto.permissionName));
+                query = query.Where(x => x.PermissionName.ToUpper().Contains(permissionQueryDto.permissionName.ToUpper()));
             }
             if (!string.IsNullOrWhiteSpace(permissionQueryDto.action))
             {
-                query = query.Where(x => x.Action.Contains(permissionQueryDto.action));
+                query = query.Where(x => x.Action.ToUpper().Contains(permissionQueryDto.action.ToUpper()));
             }
             if (!string.IsNullOrWhiteSpace(permissionQueryDto.resource))
             {
-                query = query.Where(x => x.Resource.Contains(permissionQueryDto.resource));
+                query = query.Where(x => x.Resource.ToUpper().Contains(permissionQueryDto.resource.ToUpper()));
             }
             if (!string.IsNullOrWhiteSpace(permissionQueryDto?.sortBy) && permissionQueryDto.isDesc.HasValue)
             {
@@ -67,6 +67,20 @@ namespace HRIS.Data.Repositories
         public async Task DeleteAsync(Permission permission, CancellationToken cancellationToken)
         {
             _hrisContext.Permissions.Remove(permission);
+        }
+
+        public async Task<List<Permission>> GetPermissionByUserIdAsync(string userId, CancellationToken cancellationToken)
+        {
+            var userPermissions = (from p in _hrisContext.Permissions
+                                   join rp in _hrisContext.RolePermissions on p.Id equals rp.PermissionId
+                                   join r in _hrisContext.Roles on rp.RoleId equals r.Id
+                                   join ur in _hrisContext.UserRoles on r.Id equals ur.RoleId
+                                   join u in _hrisContext.Users on ur.UserId equals u.Id
+                                   where u.Id == Guid.Parse(userId)
+                                   select p);
+
+            var data = await userPermissions.ToListAsync(cancellationToken);
+            return data;
         }
     }
 }

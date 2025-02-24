@@ -82,5 +82,18 @@ namespace HRIS.Api.Controllers
 
             return Ok(response);
         }
+
+        [HttpGet("UserPermission")]
+        public async Task<IActionResult> GetUserPermissionAsync(CancellationToken cancellationToken)
+        {
+            var response = await _permissionService.GetPermissionUserAsync(cancellationToken);
+
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
     }
 }

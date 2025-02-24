@@ -8,8 +8,8 @@ namespace HRIS.Core.Entity
         public Permission(PermissionDto permissionDto)
         {
             PermissionName = permissionDto.permissionName;
-            Action = permissionDto.action;
-            Resource = permissionDto.resource;
+            Action = permissionDto.action.ToUpper();
+            Resource = permissionDto.resource.ToUpper();
         }
 
         public Guid Id { get; set; } = default!;
@@ -23,8 +23,8 @@ namespace HRIS.Core.Entity
         public void UpdatePermission(PermissionDto permissionDto)
         {
             PermissionName = permissionDto.permissionName ?? PermissionName;
-            Action = permissionDto.action ?? Action;
-            Resource = permissionDto.resource ?? Resource;
+            Action = permissionDto.action.ToUpper() ?? Action;
+            Resource = permissionDto.resource.ToUpper() ?? Resource;
         }
     }
 }

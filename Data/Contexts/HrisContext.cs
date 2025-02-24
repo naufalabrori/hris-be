@@ -30,6 +30,7 @@ namespace HRIS.Data.Contexts
         public DbSet<PerformanceReview> PerformanceReviews { get; set; } = null!;
         public DbSet<Recruitment> Recruitments { get; set; } = null!;
         public DbSet<Training> Trainings { get; set; } = null!;
+        public DbSet<Menu> Menus { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -136,6 +137,11 @@ namespace HRIS.Data.Contexts
                 entity.HasKey(x => x.Id);
                 entity.HasIndex(x => x.EmployeeId);
                 entity.HasIndex(x => x.ReviewerId);
+            });
+
+            modelBuilder.Entity<Menu>(entity =>
+            {
+                entity.HasKey(x => x.Id);
             });
         }
 

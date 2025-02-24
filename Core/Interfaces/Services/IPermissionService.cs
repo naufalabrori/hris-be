@@ -8,5 +8,6 @@ namespace HRIS.Core.Interfaces.Services
         public Task<ApiResponseDto<Permission?>> ReadPermissionByIdAsync(string id, CancellationToken cancellationToken);
         public Task<ApiResponseDto<Permission?>> UpdatePermissionAsync(string id, PermissionDto updatePermission, CancellationToken cancellationToken);
         public Task<ApiResponseDto<bool>> DeletePermissionAsync(string id, CancellationToken cancellationToken);
+        public Task<ApiResponseDto<PermissionUserDto>> GetPermissionUserAsync(CancellationToken cancellationToken);
     }
 }

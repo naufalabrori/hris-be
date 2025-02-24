@@ -112,6 +112,8 @@ builder.Services.AddScoped<IRecruitmentRepository, RecruitmentRepository>();
 builder.Services.AddScoped<IRecruitmentService, RecruitmentService>();
 builder.Services.AddScoped<IApplicantRepository, ApplicantRepository>();
 builder.Services.AddScoped<IApplicantService, ApplicantService>();
+builder.Services.AddScoped<IMenuRepository, MenuRepository>();
+builder.Services.AddScoped<IMenuService, MenuService>();
 
 builder.Services.AddDbContext<HrisContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 

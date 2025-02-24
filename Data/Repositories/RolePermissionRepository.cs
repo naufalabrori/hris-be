@@ -24,7 +24,25 @@ namespace HRIS.Data.Repositories
 
         public async Task<RolePermissionsResponseDto> GetAllAsync(RolePermissionQueryDto rolePermissionQueryDto, CancellationToken cancellationToken)
         {
-            var query = _hrisContext.RolePermissions.IsActiveRows().Select(x => x);
+            var query = (from rp in _hrisContext.RolePermissions
+                            join p in _hrisContext.Permissions on rp.PermissionId equals p.Id
+                            join r in _hrisContext.Roles on rp.RoleId equals r.Id
+                            select new RolePermissionExtDto
+                            {
+                                Id = rp.Id,
+                                RoleId = rp.RoleId,
+                                PermissionId = rp.PermissionId,
+                                PermissionName = p.PermissionName,
+                                Action = p.Action ?? string.Empty,
+                                Resource = p.Resource ?? string.Empty,
+                                IsActive = rp.IsActive,
+                                CreatedBy = rp.CreatedBy,
+                                CreatedByName = rp.CreatedByName,
+                                CreatedDate = rp.CreatedDate,
+                                ModifiedBy = rp.ModifiedBy,
+                                ModifiedByName = rp.ModifiedByName,
+                                ModifiedDate = rp.ModifiedDate,
+                            });
 
             if (!string.IsNullOrWhiteSpace(rolePermissionQueryDto.roleId))
             {
@@ -33,6 +51,18 @@ namespace HRIS.Data.Repositories
             if (!string.IsNullOrWhiteSpace(rolePermissionQueryDto.permissionId))
             {
                 query = query.Where(x => x.PermissionId.ToString() == rolePermissionQueryDto.permissionId);
+            }
+            if (!string.IsNullOrWhiteSpace(rolePermissionQueryDto?.permissionName))
+            {
+                query = query.Where(x => x.PermissionName.ToUpper().Contains(x.PermissionName.ToUpper()));
+            }
+            if (!string.IsNullOrWhiteSpace(rolePermissionQueryDto?.action))
+            {
+                query = query.Where(x => x.Action.ToUpper().Contains(x.Action.ToUpper()));
+            }
+            if (!string.IsNullOrWhiteSpace(rolePermissionQueryDto?.resource))
+            {
+                query = query.Where(x => x.Resource.ToUpper().Contains(x.Resource.ToUpper()));
             }
             if (!string.IsNullOrWhiteSpace(rolePermissionQueryDto?.sortBy) && rolePermissionQueryDto.isDesc.HasValue)
             {
