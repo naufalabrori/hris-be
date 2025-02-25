@@ -54,15 +54,15 @@ namespace HRIS.Data.Repositories
             }
             if (!string.IsNullOrWhiteSpace(rolePermissionQueryDto?.permissionName))
             {
-                query = query.Where(x => x.PermissionName.ToUpper().Contains(x.PermissionName.ToUpper()));
+                query = query.Where(x => x.PermissionName.ToUpper().Contains(rolePermissionQueryDto.permissionName.ToUpper()));
             }
             if (!string.IsNullOrWhiteSpace(rolePermissionQueryDto?.action))
             {
-                query = query.Where(x => x.Action.ToUpper().Contains(x.Action.ToUpper()));
+                query = query.Where(x => x.Action.ToUpper().Contains(rolePermissionQueryDto.action.ToUpper()));
             }
             if (!string.IsNullOrWhiteSpace(rolePermissionQueryDto?.resource))
             {
-                query = query.Where(x => x.Resource.ToUpper().Contains(x.Resource.ToUpper()));
+                query = query.Where(x => x.Resource.ToUpper().Contains(rolePermissionQueryDto.resource.ToUpper()));
             }
             if (!string.IsNullOrWhiteSpace(rolePermissionQueryDto?.sortBy) && rolePermissionQueryDto.isDesc.HasValue)
             {
@@ -87,6 +87,12 @@ namespace HRIS.Data.Repositories
         public async Task DeleteAsync(RolePermission rolePermission, CancellationToken cancellationToken)
         {
             _hrisContext.RolePermissions.Remove(rolePermission);
+        }
+
+        public async Task<RolePermission?> GetByRoleIdAndPermissionIdAsync(string roleId, string permissionId, CancellationToken cancellationToken)
+        {
+            var rolePermission = await _hrisContext.RolePermissions.IsActiveRows().AsNoTracking().FirstOrDefaultAsync(x => x.RoleId.ToString() == roleId && x.PermissionId.ToString() == permissionId, cancellationToken);
+            return rolePermission;
         }
     }
 }

@@ -8,5 +8,6 @@ namespace HRIS.Core.Interfaces.Repositories
         public Task<RolePermissionsResponseDto> GetAllAsync(RolePermissionQueryDto rolePermissionQueryDto, CancellationToken cancellationToken);
         public Task UpdateAsync(RolePermission rolePermission, CancellationToken cancellationToken);
         public Task DeleteAsync(RolePermission rolePermission, CancellationToken cancellationToken);
+        public Task<RolePermission?> GetByRoleIdAndPermissionIdAsync(string roleId, string permissionId, CancellationToken cancellationToken);
     }
 }

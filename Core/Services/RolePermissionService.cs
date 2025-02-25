@@ -13,6 +13,16 @@
 
         public async Task<ApiResponseDto<RolePermission?>> CreateRolePermissionAsync(RolePermissionDto rolePermission, CancellationToken cancellationToken)
         {
+            var existingRolePermission = await _rolePermissionRepository.GetByRoleIdAndPermissionIdAsync(rolePermission.roleId, rolePermission.permissionId, cancellationToken);
+            if (existingRolePermission != null)
+            {
+                return new ApiResponseDto<RolePermission?>
+                {
+                    Success = false,
+                    Message = "Role Permission already exist"
+                };
+            }
+
             var newRolePermission = new RolePermission(rolePermission);
 
             await _rolePermissionRepository.AddAsync(newRolePermission, cancellationToken);
