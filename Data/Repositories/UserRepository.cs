@@ -43,7 +43,7 @@ namespace HRIS.Data.Repositories
 
         public async Task<UsersResponseDto> GetAllAsync(UserQueryDto userQueryDto, CancellationToken cancellationToken)
         {
-            var query = from user in _hrisContext.Users.IsActiveRows()
+            var query = from user in _hrisContext.Users
                         select new UserResponseDto
                         {
                             Id = user.Id,

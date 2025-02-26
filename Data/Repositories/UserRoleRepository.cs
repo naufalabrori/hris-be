@@ -24,7 +24,22 @@ namespace HRIS.Data.Repositories
 
         public async Task<UserRolesResponseDto> GetAllAsync(UserRoleQueryDto userRoleQueryDto, CancellationToken cancellationToken)
         {
-            var query = _hrisContext.UserRoles.IsActiveRows().Select(x => x);
+            var query = (from ur in _hrisContext.UserRoles
+                            join r in _hrisContext.Roles on ur.RoleId equals r.Id
+                            select new UserRoleExtDto
+                            {
+                                Id = ur.Id,
+                                RoleId = ur.RoleId,
+                                UserId = ur.UserId,
+                                RoleName = r.RoleName,
+                                IsActive = ur.IsActive,
+                                CreatedBy = ur.CreatedBy,
+                                CreatedDate = ur.CreatedDate,
+                                CreatedByName = ur.CreatedByName,
+                                ModifiedBy = ur.ModifiedBy,
+                                ModifiedByName = ur.ModifiedByName,
+                                ModifiedDate = ur.ModifiedDate,
+                            });
 
             if (!string.IsNullOrWhiteSpace(userRoleQueryDto.userId))
             {
@@ -33,6 +48,10 @@ namespace HRIS.Data.Repositories
             if (!string.IsNullOrWhiteSpace(userRoleQueryDto.roleId))
             {
                 query = query.Where(x => x.RoleId.ToString() == userRoleQueryDto.roleId);
+            }
+            if (!string.IsNullOrWhiteSpace(userRoleQueryDto?.roleName))
+            {
+                query = query.Where(x => x.RoleName.ToLower().Contains(userRoleQueryDto.roleName.ToLower()));
             }
             if (!string.IsNullOrWhiteSpace(userRoleQueryDto?.sortBy) && userRoleQueryDto.isDesc.HasValue)
             {
@@ -57,6 +76,12 @@ namespace HRIS.Data.Repositories
         public async Task DeleteAsync(UserRole userRole, CancellationToken cancellationToken)
         {
             _hrisContext.UserRoles.Remove(userRole);
+        }
+
+        public async Task<UserRole?> GetByUserIdAndRoleIdAsync(string userId, string roleId, CancellationToken cancellationToken)
+        {
+            var userRole = await _hrisContext.UserRoles.IsActiveRows().AsNoTracking().FirstOrDefaultAsync(x => x.UserId.ToString() == userId && x.RoleId.ToString() == roleId, cancellationToken);
+            return userRole;
         }
     }
 }

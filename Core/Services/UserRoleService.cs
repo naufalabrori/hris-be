@@ -14,6 +14,16 @@ namespace HRIS.Core.Services
 
         public async Task<ApiResponseDto<UserRole?>> CreateUserRoleAsync(UserRoleDto userRole, CancellationToken cancellationToken)
         {
+            var existingUserRole = await _userRoleRepository.GetByUserIdAndRoleIdAsync(userRole.userId, userRole.roleId, cancellationToken);
+            if (existingUserRole != null)
+            {
+                return new ApiResponseDto<UserRole?>
+                {
+                    Success = false,
+                    Message = "User Role already exist"
+                };
+            }
+
             var newUserRole = new UserRole(userRole);
 
             await _userRoleRepository.AddAsync(newUserRole, cancellationToken);

@@ -1,7 +1,4 @@
-﻿using HRIS.Core.Entity;
-using System;
-using System.Collections.Generic;
-
+﻿
 namespace HRIS.Core.Dto
 {
     public record NewUserDto(string employeeId, string email, string username, string password);
