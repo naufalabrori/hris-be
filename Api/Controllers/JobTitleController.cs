@@ -58,7 +58,7 @@ namespace HRIS.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateJobTitleAsync(string id, [FromBody] JobTitleDto updateJobTitle, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateJobTitleAsync(string id, [FromBody] JobTitleUpdateDto updateJobTitle, CancellationToken cancellationToken)
         {
             var response = await _jobTitleService.UpdateJobTitleAsync(id, updateJobTitle, cancellationToken);
 

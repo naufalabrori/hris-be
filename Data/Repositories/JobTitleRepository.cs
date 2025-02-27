@@ -18,13 +18,13 @@ namespace HRIS.Data.Repositories
         public async Task<JobTitle?> GetByIdAsync(string id, CancellationToken cancellationToken)
         {
             Guid jobTitleId = Guid.Parse(id);
-            var jobTitle = await _hrisContext.JobTitles.IsActiveRows().AsNoTracking().FirstOrDefaultAsync(x => x.Id == jobTitleId, cancellationToken);
+            var jobTitle = await _hrisContext.JobTitles.AsNoTracking().FirstOrDefaultAsync(x => x.Id == jobTitleId, cancellationToken);
             return jobTitle;
         }
 
         public async Task<JobTitlesResponseDto> GetAllAsync(JobTitleQueryDto jobTitleQueryDto, CancellationToken cancellationToken)
         {
-            var query = _hrisContext.JobTitles.IsActiveRows().Select(x => x);
+            var query = _hrisContext.JobTitles.Select(x => x);
 
             if (!string.IsNullOrWhiteSpace(jobTitleQueryDto.title))
             {

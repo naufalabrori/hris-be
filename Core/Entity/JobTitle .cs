@@ -23,12 +23,13 @@ namespace HRIS.Core.Entity
         public decimal? MinSalary { get; set; } 
         public decimal? MaxSalary { get; set; }
 
-        public void UpdateJobTitle(JobTitleDto jobTitleDto)
+        public void UpdateJobTitle(JobTitleUpdateDto jobTitleDto)
         {
             Title = jobTitleDto.title ?? Title;
             Description = jobTitleDto.description ?? Description;
             MinSalary = jobTitleDto?.minSalary ?? MinSalary;
             MaxSalary = jobTitleDto?.maxSalary ?? MaxSalary;
+            IsActive = jobTitleDto?.isActive ?? IsActive;
         }
     }
 }

@@ -68,7 +68,7 @@ namespace HRIS.Core.Services
             };
         }
 
-        public async Task<ApiResponseDto<JobTitle?>> UpdateJobTitleAsync(string id, JobTitleDto updateJobTitle, CancellationToken cancellationToken)
+        public async Task<ApiResponseDto<JobTitle?>> UpdateJobTitleAsync(string id, JobTitleUpdateDto updateJobTitle, CancellationToken cancellationToken)
         {
             if (!StringExtensions.IsValidGuid(id))
             {
