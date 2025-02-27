@@ -7,13 +7,16 @@ namespace HRIS.Core.Services
         private readonly IUserRepository _userRepository;
         private readonly ITokenGenerator _tokenGenerator;
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly IUserRoleRepository _userRoleRepository;
 
-        public UserService(IHrisRepository hrisRepository, IUserRepository userRepository, ITokenGenerator tokenGenerator, IEmployeeRepository employeeRepository)
+        public UserService(IHrisRepository hrisRepository, IUserRepository userRepository, ITokenGenerator tokenGenerator, 
+            IEmployeeRepository employeeRepository, IUserRoleRepository userRoleRepository)
         {
             _hrisRepository = hrisRepository;
             _userRepository = userRepository;
             _tokenGenerator = tokenGenerator;
             _employeeRepository = employeeRepository;
+            _userRoleRepository = userRoleRepository;
         }
 
         public async Task<ApiResponseDto<UserResponseDto?>> CreateUserAsync(NewUserDto user, CancellationToken cancellationToken)
@@ -234,7 +237,15 @@ namespace HRIS.Core.Services
             await _userRepository.UpdateAsync(user, cancellationToken);
             await _hrisRepository.SaveChangesAsync(cancellationToken);
 
-            var token = _tokenGenerator.GenerateToken(user.Id.ToString(), user.Username, fullname);
+            var userRoles = await _userRoleRepository.GetByUserIdAsync(user.Id.ToString(), cancellationToken);
+            var roles = new List<string>();
+
+            foreach (var role in userRoles)
+            {
+                roles.Add(role.RoleName);
+            }
+
+            var token = _tokenGenerator.GenerateToken(user.Id.ToString(), user.Username, fullname, roles);
 
             return new ApiResponseDto<UserLoginResponseDto?>
             {

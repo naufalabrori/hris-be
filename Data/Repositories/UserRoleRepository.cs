@@ -83,5 +83,29 @@ namespace HRIS.Data.Repositories
             var userRole = await _hrisContext.UserRoles.IsActiveRows().AsNoTracking().FirstOrDefaultAsync(x => x.UserId.ToString() == userId && x.RoleId.ToString() == roleId, cancellationToken);
             return userRole;
         }
+
+        public async Task<List<UserRoleExtDto>> GetByUserIdAsync(string userId, CancellationToken cancellationToken)
+        {
+            var query = (from ur in _hrisContext.UserRoles
+                         join r in _hrisContext.Roles on ur.RoleId equals r.Id
+                         where ur.UserId.ToString() == userId
+                         select new UserRoleExtDto
+                         {
+                             Id = ur.Id,
+                             RoleId = ur.RoleId,
+                             UserId = ur.UserId,
+                             RoleName = r.RoleName,
+                             IsActive = ur.IsActive,
+                             CreatedBy = ur.CreatedBy,
+                             CreatedDate = ur.CreatedDate,
+                             CreatedByName = ur.CreatedByName,
+                             ModifiedBy = ur.ModifiedBy,
+                             ModifiedByName = ur.ModifiedByName,
+                             ModifiedDate = ur.ModifiedDate,
+                         });
+
+            var userRoles = await query.ToListAsync(cancellationToken);
+            return userRoles;
+        }
     }
 }

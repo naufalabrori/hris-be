@@ -28,15 +28,15 @@ namespace HRIS.Data.Repositories
 
             if (!string.IsNullOrWhiteSpace(employeeQueryDto.firstName))
             {
-                query = query.Where(x => x.FirstName.Contains(employeeQueryDto.firstName));
+                query = query.Where(x => x.FirstName.ToLower().Contains(employeeQueryDto.firstName.ToLower()));
             }
             if (!string.IsNullOrWhiteSpace(employeeQueryDto.lastName))
             {
-                query = query.Where(x => x.LastName.Contains(employeeQueryDto.lastName));
+                query = query.Where(x => x.LastName.ToLower().Contains(employeeQueryDto.lastName.ToLower()));
             }
             if (!string.IsNullOrWhiteSpace(employeeQueryDto.gender))
             {
-                query = query.Where(x => x.Gender.Contains(employeeQueryDto.gender));
+                query = query.Where(x => x.Gender.ToLower().Contains(employeeQueryDto.gender.ToLower()));
             }
             if (employeeQueryDto.dateOfBirth != null && employeeQueryDto.dateOfBirth != DateTime.MinValue)
             {
@@ -44,15 +44,15 @@ namespace HRIS.Data.Repositories
             }
             if (!string.IsNullOrWhiteSpace(employeeQueryDto.email))
             {
-                query = query.Where(x => x.Email.Contains(employeeQueryDto.email));
+                query = query.Where(x => x.Email.ToLower().Contains(employeeQueryDto.email.ToLower()));
             }
             if (!string.IsNullOrWhiteSpace(employeeQueryDto.phoneNumber))
             {
-                query = query.Where(x => x.PhoneNumber.Contains(employeeQueryDto.phoneNumber));
+                query = query.Where(x => x.PhoneNumber.ToLower().Contains(employeeQueryDto.phoneNumber.ToLower()));
             }
             if (!string.IsNullOrWhiteSpace(employeeQueryDto.address))
             {
-                query = query.Where(x => x.Address.Contains(employeeQueryDto.address));
+                query = query.Where(x => x.Address.ToLower().Contains(employeeQueryDto.address.ToLower()));
             }
             if (employeeQueryDto.hireDate != null && employeeQueryDto.hireDate != DateTime.MinValue)
             {

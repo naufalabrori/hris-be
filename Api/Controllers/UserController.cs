@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace HRIS.Api.Controllers
 {
     [Route("api/[controller]")]
-    //[Authorize]
+    [Authorize(Roles = "Super Admin")]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
