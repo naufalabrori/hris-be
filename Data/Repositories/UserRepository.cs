@@ -1,4 +1,6 @@
 ﻿
+using HRIS.Core.Dto;
+
 namespace HRIS.Data.Repositories
 {
     public class UserRepository : IUserRepository
@@ -43,22 +45,22 @@ namespace HRIS.Data.Repositories
 
         public async Task<UsersResponseDto> GetAllAsync(UserQueryDto userQueryDto, CancellationToken cancellationToken)
         {
-            var query = from user in _hrisContext.Users
-                        select new UserResponseDto
-                        {
-                            Id = user.Id,
-                            EmployeeId = user.EmployeeId,
-                            Email = user.Email,
-                            Username = user.Username,
-                            LastLogin = user.LastLogin,
-                            IsActive = user.IsActive,
-                            CreatedBy = user.CreatedBy,
-                            CreatedByName = user.CreatedByName,
-                            CreatedDate = user.CreatedDate,
-                            ModifiedBy = user.ModifiedBy,
-                            ModifiedByName = user.ModifiedByName,
-                            ModifiedDate = user.ModifiedDate,
-                        };
+            var query = (from user in _hrisContext.Users
+                         select new UserResponseDto
+                         {
+                             Id = user.Id,
+                             EmployeeId = user.EmployeeId,
+                             Email = user.Email,
+                             Username = user.Username,
+                             LastLogin = user.LastLogin,
+                             IsActive = user.IsActive,
+                             CreatedBy = user.CreatedBy,
+                             CreatedByName = user.CreatedByName,
+                             CreatedDate = user.CreatedDate,
+                             ModifiedBy = user.ModifiedBy,
+                             ModifiedByName = user.ModifiedByName,
+                             ModifiedDate = user.ModifiedDate,
+                         });
 
             if (!string.IsNullOrWhiteSpace(userQueryDto.employeeId))
             {
@@ -66,11 +68,11 @@ namespace HRIS.Data.Repositories
             }
             if (!string.IsNullOrWhiteSpace(userQueryDto.email))
             {
-                query = query.Where(x => x.Email.Contains(userQueryDto.email));
+                query = query.Where(x => x.Email.ToLower().Contains(userQueryDto.email.ToLower()));
             }
             if (!string.IsNullOrWhiteSpace(userQueryDto.username))
             {
-                query = query.Where(x => x.Username.Contains(userQueryDto.username));
+                query = query.Where(x => x.Username.ToLower().Contains(userQueryDto.username.ToLower()));
             }
             if (userQueryDto?.lastLogin != null && userQueryDto.lastLogin != DateTime.MinValue)
             {
@@ -86,6 +88,7 @@ namespace HRIS.Data.Repositories
                 .Skip(userQueryDto.offset)
                 .Take(userQueryDto.limit)
                 .AsNoTracking();
+
             var page = await pageQuery.ToListAsync(cancellationToken);
 
             return new UsersResponseDto(page, totalData);

@@ -1,4 +1,6 @@
 ﻿
+using HRIS.Core.Dto;
+
 namespace HRIS.Data.Repositories
 {
     public class RoleRepository : IRoleRepository
@@ -34,7 +36,7 @@ namespace HRIS.Data.Repositories
 
             if (!string.IsNullOrWhiteSpace(roleQueryDto.roleName))
             {
-                query = query.Where(x => x.RoleName.Contains(roleQueryDto.roleName));
+                query = query.Where(x => x.RoleName.ToLower().Contains(roleQueryDto.roleName.ToLower()));
             }
             if (!string.IsNullOrWhiteSpace(roleQueryDto?.sortBy) && roleQueryDto.isDesc.HasValue)
             {
@@ -46,6 +48,7 @@ namespace HRIS.Data.Repositories
                 .Skip(roleQueryDto.offset)
                 .Take(roleQueryDto.limit)
                 .AsNoTracking();
+
             var page = await pageQuery.ToListAsync(cancellationToken);
 
             return new RolesResponseDto(page, totalData);

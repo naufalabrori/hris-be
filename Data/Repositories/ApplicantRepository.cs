@@ -1,4 +1,6 @@
 ﻿
+using HRIS.Core.Dto;
+
 namespace HRIS.Data.Repositories
 {
     public class ApplicantRepository : IApplicantRepository
@@ -26,6 +28,30 @@ namespace HRIS.Data.Repositories
         {
             var query = _hrisContext.Applicants.IsActiveRows().AsNoTracking().Select(x => x);
 
+            if (!string.IsNullOrWhiteSpace(applicantQueryDto?.firstName))
+            {
+                query = query.Where(x => x.FirstName.ToLower().Contains(applicantQueryDto.firstName.ToLower()));
+            }
+            if (!string.IsNullOrEmpty(applicantQueryDto?.lastName))
+            {
+                query = query.Where(x => x.LastName.ToLower().Contains(applicantQueryDto.lastName.ToLower()));
+            }
+            if (!string.IsNullOrWhiteSpace(applicantQueryDto?.email))
+            {
+                query = query.Where(x => x.Email.ToLower().Contains(applicantQueryDto.email.ToLower()));
+            }
+            if (!string.IsNullOrWhiteSpace(applicantQueryDto?.phoneNumber))
+            {
+                query = query.Where(x => x.PhoneNumber.Contains(applicantQueryDto.phoneNumber));
+            }
+            if (applicantQueryDto?.applicationDate != null && applicantQueryDto.applicationDate != DateTime.MinValue)
+            {
+                query = query.Where(x => x.ApplicationDate.Date == applicantQueryDto.applicationDate.Date);
+            } 
+            if (!string.IsNullOrWhiteSpace(applicantQueryDto?.recruitmentId))
+            {
+                query = query.Where(x => x.RecruitmentId.ToString() == applicantQueryDto.recruitmentId);
+            }
             if (!string.IsNullOrWhiteSpace(applicantQueryDto?.sortBy) && applicantQueryDto.isDesc.HasValue)
             {
                 query = query.OrderBy($"{applicantQueryDto.sortBy} {(applicantQueryDto.isDesc.Value ? "DESC" : "ASC")}");
@@ -36,6 +62,7 @@ namespace HRIS.Data.Repositories
                 .Skip(applicantQueryDto.offset)
                 .Take(applicantQueryDto.limit)
                 .AsNoTracking();
+
             var page = await pageQuery.ToListAsync(cancellationToken);
 
             return new ApplicantsResponseDto(page, totalData);

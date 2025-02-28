@@ -32,6 +32,26 @@ namespace HRIS.Data.Repositories
         {
             var query = _hrisContext.Leaves.Select(x => x);
 
+            if (!string.IsNullOrWhiteSpace(leaveQueryDto.employeeId))
+            {
+                query = query.Where(x => x.EmployeeId.ToString() == leaveQueryDto.employeeId);
+            }
+            if (!string.IsNullOrWhiteSpace(leaveQueryDto.leaveType))
+            {
+                query = query.Where(x => x.LeaveType.ToLower().Contains(leaveQueryDto.leaveType.ToLower()));
+            }
+            if (!string.IsNullOrWhiteSpace(leaveQueryDto.status))
+            {
+                query = query.Where(x => x.Status.ToLower().Contains(leaveQueryDto.status.ToLower()));
+            }
+            if (leaveQueryDto?.startDate != null && leaveQueryDto.startDate != DateTime.MinValue)
+            {
+                query = query.Where(x => x.StartDate.Date >= leaveQueryDto.startDate.Date);
+            }
+            if (leaveQueryDto?.endDate != null && leaveQueryDto.endDate != DateTime.MinValue)
+            {
+                query = query.Where(x => x.EndDate.Date <= leaveQueryDto.endDate.Date);
+            }
             if (!string.IsNullOrWhiteSpace(leaveQueryDto?.sortBy) && leaveQueryDto.isDesc.HasValue)
             {
                 query = query.OrderBy($"{leaveQueryDto.sortBy} {(leaveQueryDto.isDesc.Value ? "DESC" : "ASC")}");

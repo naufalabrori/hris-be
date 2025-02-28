@@ -28,11 +28,11 @@ namespace HRIS.Data.Repositories
 
             if (!string.IsNullOrWhiteSpace(jobTitleQueryDto.title))
             {
-                query = query.Where(x => x.Title.Contains(jobTitleQueryDto.title));
+                query = query.Where(x => x.Title.ToLower().Contains(jobTitleQueryDto.title.ToLower()));
             }
             if (!string.IsNullOrWhiteSpace(jobTitleQueryDto.description))
             {
-                query = query.Where(x => x.Description.Contains(jobTitleQueryDto.description));
+                query = query.Where(x => x.Description.ToLower().Contains(jobTitleQueryDto.description.ToLower()));
             }
             if (jobTitleQueryDto?.minSalary != null)
             {

@@ -44,7 +44,7 @@ namespace HRIS.Data.Repositories
             }
             if (!string.IsNullOrWhiteSpace(recruitmentQueryDto.status))
             {
-                query = query.Where(x => x.Status.Contains(recruitmentQueryDto.status));
+                query = query.Where(x => x.Status.ToLower().Contains(recruitmentQueryDto.status.ToLower()));
             }
             if (!string.IsNullOrWhiteSpace(recruitmentQueryDto?.sortBy) && recruitmentQueryDto.isDesc.HasValue)
             {

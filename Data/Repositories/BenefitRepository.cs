@@ -38,11 +38,11 @@ namespace HRIS.Data.Repositories
             }
             if (!string.IsNullOrWhiteSpace(benefitQueryDto.benefitType))
             {
-                query = query.Where(x => x.BenefitType.Contains(benefitQueryDto.benefitType));
+                query = query.Where(x => x.BenefitType.ToLower().Contains(benefitQueryDto.benefitType.ToLower()));
             }
             if (!string.IsNullOrWhiteSpace(benefitQueryDto.details))
             {
-                query = query.Where(x => x.Details.Contains(benefitQueryDto.details));
+                query = query.Where(x => x.Details.ToLower().Contains(benefitQueryDto.details.ToLower()));
             }
             if (benefitQueryDto?.startDate != null && benefitQueryDto.startDate != DateTime.MinValue)
             {

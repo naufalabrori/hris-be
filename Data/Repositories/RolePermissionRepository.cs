@@ -1,4 +1,6 @@
 ﻿
+using HRIS.Core.Dto;
+
 namespace HRIS.Data.Repositories
 {
     public class RolePermissionRepository : IRolePermissionRepository
@@ -71,8 +73,8 @@ namespace HRIS.Data.Repositories
 
             var totalData = await query.CountAsync(cancellationToken);
             var pageQuery = query
-            .Skip(rolePermissionQueryDto.offset)
-            .Take(rolePermissionQueryDto.limit)
+                .Skip(rolePermissionQueryDto.offset)
+                .Take(rolePermissionQueryDto.limit)
                 .AsNoTracking();
             var page = await pageQuery.ToListAsync(cancellationToken);
 

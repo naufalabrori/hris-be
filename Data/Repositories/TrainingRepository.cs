@@ -28,11 +28,11 @@ namespace HRIS.Data.Repositories
 
             if (!string.IsNullOrWhiteSpace(trainingQueryDto.trainingName))
             {
-                query = query.Where(x => x.TrainingName.Contains(trainingQueryDto.trainingName));
+                query = query.Where(x => x.TrainingName.ToLower().Contains(trainingQueryDto.trainingName.ToLower()));
             }
             if (!string.IsNullOrWhiteSpace(trainingQueryDto.description))
             {
-                query = query.Where(x => x.Description.Contains(trainingQueryDto.description));
+                query = query.Where(x => x.Description.ToLower().Contains(trainingQueryDto.description.ToLower()));
             }
             if (trainingQueryDto?.startDate != null && trainingQueryDto.startDate != DateTime.MinValue)
             {
@@ -44,7 +44,7 @@ namespace HRIS.Data.Repositories
             }
             if (!string.IsNullOrWhiteSpace(trainingQueryDto.trainer))
             {
-                query = query.Where(x => x.Trainer.Contains(trainingQueryDto.trainer));
+                query = query.Where(x => x.Trainer.ToLower().Contains(trainingQueryDto.trainer.ToLower()));
             }
             if (!string.IsNullOrWhiteSpace(trainingQueryDto?.sortBy) && trainingQueryDto.isDesc.HasValue)
             {

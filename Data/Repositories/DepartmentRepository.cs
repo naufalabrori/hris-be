@@ -34,7 +34,7 @@ namespace HRIS.Data.Repositories
 
             if (!string.IsNullOrWhiteSpace(departmentQueryDto.departmentName))
             {
-                query = query.Where(x => x.DepartmentName.Contains(departmentQueryDto.departmentName));
+                query = query.Where(x => x.DepartmentName.ToLower().Contains(departmentQueryDto.departmentName.ToLower()));
             }
             if (!string.IsNullOrWhiteSpace(departmentQueryDto.managerId))
             {
@@ -42,7 +42,7 @@ namespace HRIS.Data.Repositories
             }
             if (!string.IsNullOrWhiteSpace(departmentQueryDto.location))
             {
-                query = query.Where(x => x.Location.Contains(departmentQueryDto.location));
+                query = query.Where(x => x.Location.ToLower().Contains(departmentQueryDto.location.ToLower()));
             }
             if (!string.IsNullOrWhiteSpace(departmentQueryDto?.sortBy) && departmentQueryDto.isDesc.HasValue)
             {

@@ -1,4 +1,6 @@
 ﻿
+using HRIS.Core.Dto;
+
 namespace HRIS.Data.Repositories
 {
     public class AttendanceRepository : IAttendanceRepository
@@ -50,6 +52,7 @@ namespace HRIS.Data.Repositories
                 .Skip(attendanceQueryDto.offset)
                 .Take(attendanceQueryDto.limit)
                 .AsNoTracking();
+
             var page = await pageQuery.ToListAsync(cancellationToken);
 
             return new AttendancesResponseDto(page, totalData);

@@ -1,4 +1,6 @@
 ﻿
+using HRIS.Core.Dto;
+
 namespace HRIS.Data.Repositories
 {
     public class PermissionRepository : IPermissionRepository
@@ -30,7 +32,7 @@ namespace HRIS.Data.Repositories
 
         public async Task<PermissionsResponseDto> GetAllAsync(PermissionQueryDto permissionQueryDto, CancellationToken cancellationToken)
         {
-            var query = _hrisContext.Permissions.IsActiveRows().Select(x => x);
+            var query = _hrisContext.Permissions.Select(x => x);
 
             if (!string.IsNullOrWhiteSpace(permissionQueryDto.permissionName))
             {
@@ -54,6 +56,7 @@ namespace HRIS.Data.Repositories
                 .Skip(permissionQueryDto.offset)
                 .Take(permissionQueryDto.limit)
                 .AsNoTracking();
+
             var page = await pageQuery.ToListAsync(cancellationToken);
 
             return new PermissionsResponseDto(page, totalData);

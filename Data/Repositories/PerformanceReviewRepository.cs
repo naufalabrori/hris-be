@@ -46,7 +46,7 @@ namespace HRIS.Data.Repositories
             }
             if (!string.IsNullOrWhiteSpace(performanceReviewQueryDto?.comments))
             {
-                query = query.Where(x => x.Comments.Contains(performanceReviewQueryDto.comments));
+                query = query.Where(x => x.Comments.ToLower().Contains(performanceReviewQueryDto.comments.ToLower()));
             }
             if (!string.IsNullOrWhiteSpace(performanceReviewQueryDto?.sortBy) && performanceReviewQueryDto.isDesc.HasValue)
             {

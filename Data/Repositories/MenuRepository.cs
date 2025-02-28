@@ -1,4 +1,6 @@
 ﻿
+using HRIS.Core.Dto;
+
 namespace HRIS.Data.Repositories
 {
     public class MenuRepository : IMenuRepository
@@ -46,6 +48,7 @@ namespace HRIS.Data.Repositories
                 .Skip(menuQueryDto.offset)
                 .Take(menuQueryDto.limit)
                 .AsNoTracking();
+
             var page = await pageQuery.ToListAsync(cancellationToken);
 
             return new MenusResponseDto(page, totalData);

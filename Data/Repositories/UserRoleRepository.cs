@@ -1,4 +1,6 @@
 ﻿
+using HRIS.Core.Dto;
+
 namespace HRIS.Data.Repositories
 {
     public class UserRoleRepository : IUserRoleRepository
@@ -25,21 +27,21 @@ namespace HRIS.Data.Repositories
         public async Task<UserRolesResponseDto> GetAllAsync(UserRoleQueryDto userRoleQueryDto, CancellationToken cancellationToken)
         {
             var query = (from ur in _hrisContext.UserRoles
-                            join r in _hrisContext.Roles on ur.RoleId equals r.Id
-                            select new UserRoleExtDto
-                            {
-                                Id = ur.Id,
-                                RoleId = ur.RoleId,
-                                UserId = ur.UserId,
-                                RoleName = r.RoleName,
-                                IsActive = ur.IsActive,
-                                CreatedBy = ur.CreatedBy,
-                                CreatedDate = ur.CreatedDate,
-                                CreatedByName = ur.CreatedByName,
-                                ModifiedBy = ur.ModifiedBy,
-                                ModifiedByName = ur.ModifiedByName,
-                                ModifiedDate = ur.ModifiedDate,
-                            });
+                         join r in _hrisContext.Roles on ur.RoleId equals r.Id
+                         select new UserRoleExtDto
+                         {
+                             Id = ur.Id,
+                             RoleId = ur.RoleId,
+                             UserId = ur.UserId,
+                             RoleName = r.RoleName,
+                             IsActive = ur.IsActive,
+                             CreatedBy = ur.CreatedBy,
+                             CreatedDate = ur.CreatedDate,
+                             CreatedByName = ur.CreatedByName,
+                             ModifiedBy = ur.ModifiedBy,
+                             ModifiedByName = ur.ModifiedByName,
+                             ModifiedDate = ur.ModifiedDate,
+                         });
 
             if (!string.IsNullOrWhiteSpace(userRoleQueryDto.userId))
             {
@@ -63,6 +65,7 @@ namespace HRIS.Data.Repositories
                 .Skip(userRoleQueryDto.offset)
                 .Take(userRoleQueryDto.limit)
                 .AsNoTracking();
+
             var page = await pageQuery.ToListAsync(cancellationToken);
 
             return new UserRolesResponseDto(page, totalData);
