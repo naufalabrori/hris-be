@@ -78,7 +78,7 @@ namespace HRIS.Core.Services
             };
         }
 
-        public async Task<ApiResponseDto<Department?>> UpdateDepartmentAsync(string id, DepartmentDto updateDepartment, CancellationToken cancellationToken)
+        public async Task<ApiResponseDto<Department?>> UpdateDepartmentAsync(string id, DepartmentUpdateDto updateDepartment, CancellationToken cancellationToken)
         {
             if (!StringExtensions.IsValidGuid(id))
             {

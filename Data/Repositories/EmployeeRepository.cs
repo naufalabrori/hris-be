@@ -24,7 +24,33 @@ namespace HRIS.Data.Repositories
 
         public async Task<EmployeesResponseDto> GetAllAsync(EmployeeQueryDto employeeQueryDto, CancellationToken cancellationToken)
         {
-            var query = _hrisContext.Employees.IsActiveRows().Select(x => x);
+            var query = from emp in _hrisContext.Employees
+                           join dep in _hrisContext.Departments on emp.DepartmentId equals dep.Id
+                           select new EmployeeExtDto
+                           {
+                               Id = emp.Id,
+                               FirstName = emp.FirstName,
+                               LastName = emp.LastName,
+                               Gender = emp.Gender,
+                               DateOfBirth = emp.DateOfBirth,
+                               Email = emp.Email,
+                               PhoneNumber = emp.PhoneNumber,
+                               Address = emp.Address,
+                               HireDate = emp.HireDate,
+                               JobTitleId = emp.JobTitleId,
+                               DepartmentId = emp.DepartmentId,
+                               DepartmentName = dep.DepartmentName ?? string.Empty,
+                               ManagerId = emp.ManagerId,
+                               EmploymentStatus = emp.EmploymentStatus,
+                               Salary = emp.Salary,
+                               IsActive = dep.IsActive,
+                               CreatedBy = dep.CreatedBy,
+                               CreatedByName = dep.CreatedByName,
+                               CreatedDate = dep.CreatedDate,
+                               ModifiedBy = dep.ModifiedBy,
+                               ModifiedByName = dep.ModifiedByName,
+                               ModifiedDate = dep.ModifiedDate,
+                           };
 
             if (!string.IsNullOrWhiteSpace(employeeQueryDto.firstName))
             {
@@ -57,6 +83,10 @@ namespace HRIS.Data.Repositories
             if (employeeQueryDto.hireDate != null && employeeQueryDto.hireDate != DateTime.MinValue)
             {
                 query = query.Where(x => x.HireDate.Value.Date == employeeQueryDto.hireDate.Value.Date);
+            }
+            if (!string.IsNullOrWhiteSpace(employeeQueryDto.departmentName))
+            {
+                query = query.Where(x => x.DepartmentName.ToLower().Contains(employeeQueryDto.departmentName.ToLower()));
             }
             if (!string.IsNullOrWhiteSpace(employeeQueryDto?.sortBy) && employeeQueryDto.isDesc.HasValue)
             {

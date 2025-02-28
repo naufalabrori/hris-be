@@ -18,7 +18,7 @@ namespace HRIS.Data.Repositories
         public async Task<Department?> GetByIdAsync(string id, CancellationToken cancellationToken)
         {
             Guid departmentId = Guid.Parse(id);
-            var department = await _hrisContext.Departments.IsActiveRows().AsNoTracking().FirstOrDefaultAsync(x => x.Id == departmentId, cancellationToken);
+            var department = await _hrisContext.Departments.AsNoTracking().FirstOrDefaultAsync(x => x.Id == departmentId, cancellationToken);
             return department;
         }
 
@@ -30,7 +30,24 @@ namespace HRIS.Data.Repositories
 
         public async Task<DepartmentsResponseDto> GetAllAsync(DepartmentQueryDto departmentQueryDto, CancellationToken cancellationToken)
         {
-            var query = _hrisContext.Departments.IsActiveRows().Select(x => x);
+            var query = from dep in _hrisContext.Departments
+                        join emp in _hrisContext.Employees on dep.ManagerId equals emp.Id into empGroup
+                        from emp in empGroup.DefaultIfEmpty() // Left join
+                        select new DepartmenExtDto
+                        {
+                            Id = dep.Id,
+                            DepartmentName = dep.DepartmentName,
+                            ManagerId = dep.ManagerId,
+                            ManagerName = emp != null ? emp.FirstName + " " + emp.LastName : null, // Handle null
+                            Location = dep.Location,
+                            IsActive = dep.IsActive,
+                            CreatedBy = dep.CreatedBy,
+                            CreatedByName = dep.CreatedByName,
+                            CreatedDate = dep.CreatedDate,
+                            ModifiedBy = dep.ModifiedBy,
+                            ModifiedByName = dep.ModifiedByName,
+                            ModifiedDate = dep.ModifiedDate,
+                        };
 
             if (!string.IsNullOrWhiteSpace(departmentQueryDto.departmentName))
             {
@@ -39,6 +56,10 @@ namespace HRIS.Data.Repositories
             if (!string.IsNullOrWhiteSpace(departmentQueryDto.managerId))
             {
                 query = query.Where(x => x.ManagerId.ToString() == departmentQueryDto.managerId);
+            }
+            if (!string.IsNullOrWhiteSpace(departmentQueryDto?.managerName))
+            {
+                query = query.Where(x => x.ManagerName.ToLower().Contains(departmentQueryDto.managerName.ToLower()));
             }
             if (!string.IsNullOrWhiteSpace(departmentQueryDto.location))
             {

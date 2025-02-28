@@ -20,11 +20,12 @@ namespace HRIS.Core.Entity
         [StringLength(255)]
         public string Location { get; set; } = default!;
 
-        public void UpdateDepartment(DepartmentDto departmentDto)
+        public void UpdateDepartment(DepartmentUpdateDto departmentDto)
         {
             DepartmentName = departmentDto.departmentName ?? DepartmentName;
             ManagerId = Guid.TryParse(departmentDto.managerId, out var managerIdGuid) ? managerIdGuid : ManagerId;
             Location = departmentDto.location ?? Location;
+            IsActive = departmentDto?.isActive ?? IsActive;
         }
     }
 }

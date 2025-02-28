@@ -58,7 +58,7 @@ namespace HRIS.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateDepartmentAsync(string id, [FromBody] DepartmentDto updateDepartment, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateDepartmentAsync(string id, [FromBody] DepartmentUpdateDto updateDepartment, CancellationToken cancellationToken)
         {
             var response = await _departmentService.UpdateDepartmentAsync(id, updateDepartment, cancellationToken);
 
