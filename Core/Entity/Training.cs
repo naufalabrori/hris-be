@@ -33,6 +33,7 @@ namespace HRIS.Core.Entity
             StartDate = training?.startDate ?? StartDate;
             EndDate = training?.endDate ?? EndDate;
             Trainer = training?.trainer ?? Trainer;
+            IsActive = training?.isActive ?? IsActive;
         }
     }
 }

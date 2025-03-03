@@ -39,11 +39,11 @@ namespace HRIS.Core.Services
             };
         }
 
-        public async Task<ApiResponseDto<Employee?>> ReadEmployeeByIdAsync(string id, CancellationToken cancellationToken)
+        public async Task<ApiResponseDto<EmployeeExtDto?>> ReadEmployeeByIdAsync(string id, CancellationToken cancellationToken)
         {
             if (!StringExtensions.IsValidGuid(id))
             {
-                return new ApiResponseDto<Employee?>
+                return new ApiResponseDto<EmployeeExtDto?>
                 {
                     Success = false,
                     Message = "Invalid Guid format"
@@ -53,14 +53,14 @@ namespace HRIS.Core.Services
             var employee = await _employeeRepository.GetByIdAsync(id, cancellationToken);
             if (employee == null)
             {
-                return new ApiResponseDto<Employee?>
+                return new ApiResponseDto<EmployeeExtDto?>
                 {
                     Success = false,
                     Message = "Employee not found",
                 };
             }
 
-            return new ApiResponseDto<Employee?>
+            return new ApiResponseDto<EmployeeExtDto?>
             {
                 Success = true,
                 Message = "Get employee successfully",

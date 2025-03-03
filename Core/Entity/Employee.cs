@@ -11,13 +11,13 @@ namespace HRIS.Core.Entity
             FirstName = employee.firstName;
             LastName = employee.lastName;
             Gender = employee.gender;
-            DateOfBirth = employee.dateOfBirth;
+            DateOfBirth = employee.dateOfBirth.Value.Date;
             Email = employee.email;
             PhoneNumber = employee.phoneNumber;
             Address = employee.address;
-            HireDate = employee.hireDate;
-            JobTitleId = Guid.Parse(employee.jobTitleId);
-            DepartmentId = Guid.Parse(employee.departmentId);
+            HireDate = employee.hireDate.Value.Date;
+            JobTitleId = Guid.TryParse(employee.jobTitleId, out var jobTitleId) ? jobTitleId : Guid.Empty;
+            DepartmentId = Guid.TryParse(employee.departmentId, out var departmentId) ? departmentId : Guid.Empty;
             ManagerId = Guid.TryParse(employee.managerId, out var managerIdGuid) ? managerIdGuid : Guid.Empty;
             EmploymentStatus = employee.employmentStatus;
             Salary = employee.salary;
@@ -59,6 +59,7 @@ namespace HRIS.Core.Entity
             ManagerId = Guid.TryParse(employee.managerId, out var managerIdGuid) ? managerIdGuid : ManagerId;
             EmploymentStatus = employee.employmentStatus ?? EmploymentStatus;
             Salary = employee?.salary ?? Salary;
+            IsActive = employee?.isActive ?? IsActive;
         }
 
     }

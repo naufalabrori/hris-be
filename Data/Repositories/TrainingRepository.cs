@@ -18,13 +18,13 @@ namespace HRIS.Data.Repositories
         public async Task<Training?> GetByIdAsync(string id, CancellationToken cancellationToken)
         {
             var trainingId = Guid.Parse(id);
-            var training = await _hrisContext.Trainings.IsActiveRows().AsNoTracking().FirstOrDefaultAsync(x => x.Id == trainingId, cancellationToken);
+            var training = await _hrisContext.Trainings.AsNoTracking().FirstOrDefaultAsync(x => x.Id == trainingId, cancellationToken);
             return training;
         }
 
         public async Task<TrainingsResponseDto> GetAllAsync(TrainingQueryDto trainingQueryDto, CancellationToken cancellationToken)
         {
-            var query = _hrisContext.Trainings.IsActiveRows().AsNoTracking().Select(x => x);
+            var query = _hrisContext.Trainings.AsNoTracking().Select(x => x);
 
             if (!string.IsNullOrWhiteSpace(trainingQueryDto.trainingName))
             {

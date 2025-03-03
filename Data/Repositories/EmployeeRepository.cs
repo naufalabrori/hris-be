@@ -15,42 +15,16 @@ namespace HRIS.Data.Repositories
             _hrisContext.Employees.Add(employee);
         }
 
-        public async Task<Employee?> GetByIdAsync(string id, CancellationToken cancellationToken)
+        public async Task<EmployeeExtDto?> GetByIdAsync(string id, CancellationToken cancellationToken)
         {
             Guid empId = Guid.Parse(id);
-            var employee = await _hrisContext.Employees.IsActiveRows().AsNoTracking().FirstOrDefaultAsync(x => x.Id == empId, cancellationToken);
+            var employee = await GetEmployeeExtQuery().AsNoTracking().FirstAsync(x => x.Id == empId, cancellationToken);
             return employee;
         }
 
         public async Task<EmployeesResponseDto> GetAllAsync(EmployeeQueryDto employeeQueryDto, CancellationToken cancellationToken)
         {
-            var query = from emp in _hrisContext.Employees
-                           join dep in _hrisContext.Departments on emp.DepartmentId equals dep.Id
-                           select new EmployeeExtDto
-                           {
-                               Id = emp.Id,
-                               FirstName = emp.FirstName,
-                               LastName = emp.LastName,
-                               Gender = emp.Gender,
-                               DateOfBirth = emp.DateOfBirth,
-                               Email = emp.Email,
-                               PhoneNumber = emp.PhoneNumber,
-                               Address = emp.Address,
-                               HireDate = emp.HireDate,
-                               JobTitleId = emp.JobTitleId,
-                               DepartmentId = emp.DepartmentId,
-                               DepartmentName = dep.DepartmentName ?? string.Empty,
-                               ManagerId = emp.ManagerId,
-                               EmploymentStatus = emp.EmploymentStatus,
-                               Salary = emp.Salary,
-                               IsActive = dep.IsActive,
-                               CreatedBy = dep.CreatedBy,
-                               CreatedByName = dep.CreatedByName,
-                               CreatedDate = dep.CreatedDate,
-                               ModifiedBy = dep.ModifiedBy,
-                               ModifiedByName = dep.ModifiedByName,
-                               ModifiedDate = dep.ModifiedDate,
-                           };
+            var query = GetEmployeeExtQuery();
 
             if (!string.IsNullOrWhiteSpace(employeeQueryDto.firstName))
             {
@@ -88,6 +62,14 @@ namespace HRIS.Data.Repositories
             {
                 query = query.Where(x => x.DepartmentName.ToLower().Contains(employeeQueryDto.departmentName.ToLower()));
             }
+            if (!string.IsNullOrWhiteSpace(employeeQueryDto.jobName))
+            {
+                query = query.Where(x => x.JobName.ToLower().Contains(employeeQueryDto.jobName.ToLower()));
+            }
+            if (!string.IsNullOrWhiteSpace(employeeQueryDto.managerName))
+            {
+                query = query.Where(x => x.ManagerName.ToLower().Contains(employeeQueryDto.managerName.ToLower()));
+            }
             if (!string.IsNullOrWhiteSpace(employeeQueryDto?.sortBy) && employeeQueryDto.isDesc.HasValue)
             {
                 query = query.OrderBy($"{employeeQueryDto.sortBy} {(employeeQueryDto.isDesc.Value ? "DESC" : "ASC")}");
@@ -111,6 +93,44 @@ namespace HRIS.Data.Repositories
         public async Task DeleteAsync(Employee employee, CancellationToken cancellationToken)
         {
             _hrisContext.Employees.Remove(employee);
+        }
+
+        private IQueryable<EmployeeExtDto> GetEmployeeExtQuery()
+        {
+            var query = from emp in _hrisContext.Employees
+                        join dep in _hrisContext.Departments on emp.DepartmentId equals dep.Id
+                        join job in _hrisContext.JobTitles on emp.JobTitleId equals job.Id
+                        join mgr in _hrisContext.Employees on emp.ManagerId equals mgr.Id into mgrJoin
+                        from mgr in mgrJoin.DefaultIfEmpty() // Left Join untuk manager
+                        select new EmployeeExtDto
+                        {
+                            Id = emp.Id,
+                            FirstName = emp.FirstName,
+                            LastName = emp.LastName,
+                            Gender = emp.Gender,
+                            DateOfBirth = emp.DateOfBirth,
+                            Email = emp.Email,
+                            PhoneNumber = emp.PhoneNumber,
+                            Address = emp.Address,
+                            HireDate = emp.HireDate,
+                            JobTitleId = emp.JobTitleId,
+                            JobName = job.Title ?? string.Empty,
+                            DepartmentId = emp.DepartmentId,
+                            DepartmentName = dep.DepartmentName ?? string.Empty,
+                            ManagerId = emp.ManagerId,
+                            ManagerName = mgr != null ? mgr.FirstName + " " + mgr.LastName : null, // Ambil nama manager
+                            EmploymentStatus = emp.EmploymentStatus,
+                            Salary = emp.Salary,
+                            IsActive = emp.IsActive,
+                            CreatedBy = emp.CreatedBy,
+                            CreatedByName = emp.CreatedByName,
+                            CreatedDate = emp.CreatedDate,
+                            ModifiedBy = emp.ModifiedBy,
+                            ModifiedByName = emp.ModifiedByName,
+                            ModifiedDate = emp.ModifiedDate,
+                        };
+
+            return query;
         }
     }
 }
