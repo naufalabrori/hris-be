@@ -14,16 +14,16 @@ COPY ["Data/Data.csproj", "Data/"]
 COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 
 # Restore semua dependensi
-RUN dotnet restore "HRIS.BE.sln"
+RUN dotnet restore "Api.csproj"
 
 # Copy seluruh source code
 COPY . .
 
 # Build seluruh proyek
-RUN dotnet build "HRIS.BE.sln" -c Release -o /app/build
+RUN dotnet build "Api/Api.csproj" -c Release --no-restore -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Api/Api.csproj" -c Release -o /app/publish --no-build
+RUN dotnet publish "Api/Api.csproj" -c Release --no-build -o /app/publish 
 
 FROM base AS final
 WORKDIR /app
