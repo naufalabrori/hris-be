@@ -5,14 +5,25 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
+
+# Copy semua file solusi dan proyek
+COPY ["HRIS.BE.sln", "."]
 COPY ["Api/Api.csproj", "Api/"]
-RUN dotnet restore "Api/Api.csproj"
+COPY ["Core/Core.csproj", "Core/"]
+COPY ["Data/Data.csproj", "Data/"]
+COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
+
+# Restore semua dependensi
+RUN dotnet restore "HRIS.BE.sln"
+
+# Copy seluruh source code
 COPY . .
-WORKDIR "/app/Api"
-RUN dotnet build "Api.csproj" -c Release -o /app/build
+
+# Build seluruh proyek
+RUN dotnet build "HRIS.BE.sln" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Api.csproj" -c Release -o /app/publish --no-build
+RUN dotnet publish "Api/Api.csproj" -c Release -o /app/publish --no-build
 
 FROM base AS final
 WORKDIR /app
