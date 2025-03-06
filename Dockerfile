@@ -26,7 +26,7 @@ RUN dotnet build "HRIS.BE.sln" -c Release --no-restore -o /app/build
 
 # Publish proyek Api
 FROM build AS publish
-RUN dotnet publish "Api/Api.csproj" -c Release -o /app/publish --no-build
+RUN dotnet publish "HRIS.BE.sln" -c Release -o /app/publish --no-build
 
 # Gunakan image base untuk stage final
 FROM base AS final
