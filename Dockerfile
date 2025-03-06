@@ -21,12 +21,9 @@ RUN dotnet restore "HRIS.BE.sln"
 # Copy seluruh source code
 COPY . .
 
-# Build seluruh solusi
-RUN dotnet build "HRIS.BE.sln" -c Release --no-restore -o /app/build
-
-# Publish proyek Api
+# Build dan publish dalam satu langkah
 FROM build AS publish
-RUN dotnet publish "HRIS.BE.sln" -c Release -o /app/publish --no-build
+RUN dotnet publish "Api/Api.csproj" -c Release -o /app/publish
 
 # Gunakan image base untuk stage final
 FROM base AS final
