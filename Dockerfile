@@ -14,7 +14,7 @@ COPY ["Data/Data.csproj", "Data/"]
 COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 
 # Restore semua dependensi
-RUN dotnet restore "Api.csproj"
+RUN dotnet restore "/Api/Api.csproj"
 
 # Copy seluruh source code
 COPY . .
