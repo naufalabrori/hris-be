@@ -148,5 +148,30 @@ namespace HRIS.Core.Services
                 Data = true,
             };
         }
+
+        public async Task<ApiResponseDto<bool>> ApproveLeaveAsync(string id, CancellationToken cancellationToken)
+        {
+            var leave = await _leaveRepository.GetByIdAsync(id, cancellationToken);
+            if (leave == null)
+            {
+                return new ApiResponseDto<bool>
+                {
+                    Success = false,
+                    Message = "Leave not found"
+                };
+            }
+
+            leave.Status = "Approve";
+
+            await _leaveRepository.UpdateAsync(leave, cancellationToken);
+            await _hrisRepository.SaveChangesAsync(cancellationToken);
+
+            return new ApiResponseDto<bool>
+            {
+                Success = true,
+                Message = "Approve leave successfully",
+                Data = true,
+            };
+        }
     }
 }

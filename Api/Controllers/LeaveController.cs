@@ -82,5 +82,18 @@ namespace HRIS.Api.Controllers
 
             return Ok(response);
         }
+
+        [HttpPut("Approve/{id}")]
+        public async Task<IActionResult> ApproveLeaveAsync(string id, CancellationToken cancellationToken)
+        {
+            var response = await _leaveService.ApproveLeaveAsync(id, cancellationToken);
+
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
     }
 }
