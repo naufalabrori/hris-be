@@ -30,21 +30,45 @@ namespace HRIS.Data.Repositories
 
         public async Task<PayrollsResponseDto> GetAllAsync(PayrollQueryDto payrollQueryDto, CancellationToken cancellationToken)
         {
-            var query = _hrisContext.Payrolls.IsActiveRows().Select(x => x);
+            var query = (from pay in _hrisContext.Payrolls
+                          join emp in _hrisContext.Employees on pay.EmployeeId equals emp.Id
+                          select new PayrollExtDto
+                          {
+                              Id = pay.Id,
+                              EmployeeId = emp.Id,
+                              EmployeeName = emp.FirstName + " " + emp.LastName,
+                              PayPeriodStartDate = pay.PayPeriodStartDate,
+                              PayPeriodEndDate = pay.PayPeriodEndDate,
+                              GrossSalary = pay.GrossSalary,
+                              Deductions = pay.Deductions,
+                              NetSalary = pay.NetSalary,
+                              PaymentDate = pay.PaymentDate,
+                              IsActive = pay.IsActive,
+                              CreatedBy = pay.CreatedBy,
+                              CreatedByName = pay.CreatedByName,
+                              CreatedDate = pay.CreatedDate,
+                              ModifiedBy = pay.ModifiedBy,
+                              ModifiedByName = pay.ModifiedByName,
+                              ModifiedDate = pay.ModifiedDate,
+                          });
 
             if (!string.IsNullOrWhiteSpace(payrollQueryDto.employeeId))
             {
                 query = query.Where(x => x.EmployeeId.ToString() == payrollQueryDto.employeeId);
             }
-            if (payrollQueryDto?.grossSalary != null)
+            if (!string.IsNullOrWhiteSpace(payrollQueryDto.employeeName))
+            {
+                query = query.Where(x => x.EmployeeName.ToLower().Contains(payrollQueryDto.employeeName.ToLower()));
+            }
+            if (payrollQueryDto?.grossSalary != null && payrollQueryDto.grossSalary != 0)
             {
                 query = query.Where(x => x.GrossSalary == payrollQueryDto.grossSalary);
             }
-            if (payrollQueryDto?.deductions != null)
+            if (payrollQueryDto?.deductions != null && payrollQueryDto.deductions != 0)
             {
                 query = query.Where(x => x.Deductions == payrollQueryDto.deductions);
             }
-            if (payrollQueryDto?.netSalary != null)
+            if (payrollQueryDto?.netSalary != null && payrollQueryDto.netSalary != 0)
             {
                 query = query.Where(x => x.NetSalary == payrollQueryDto.netSalary);
             }

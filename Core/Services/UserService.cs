@@ -145,7 +145,7 @@ namespace HRIS.Core.Services
                 };
             }
 
-            var employee = await _userRepository.GetByEmployeeId(id, cancellationToken);
+            var employee = await _userRepository.GetByEmployeeId(updateUser.employeeId, cancellationToken);
             if (employee == null)
             {
                 return new ApiResponseDto<UserResponseDto?>
@@ -156,6 +156,11 @@ namespace HRIS.Core.Services
             }
 
             employee.UpdateUser(updateUser);
+
+            if (!string.IsNullOrWhiteSpace(updateUser.password))
+            {
+                employee.Password = PasswordHasher.HashPassword(updateUser.password);
+            }
 
             await _userRepository.UpdateAsync(employee, cancellationToken);
             await _hrisRepository.SaveChangesAsync(cancellationToken);
